@@ -2,42 +2,76 @@ package upm.service;
 
 import upm.model.Player;
 import upm.repo.UserRepository;
-import upm.repo.UserRepositoryImpl;
 import upm.utils.PlayerPrinter;
+import upm.utils.Printer;
 
 import java.util.List;
+import java.util.Scanner;
 
-public class UserService {
+public class UserServiceImpl implements UserService {
 
+    public static final String ENTER_PLAYER_NAME = "Enter player name:";
+    private static final String ENTER_PLAYER_SCORE = "Enter player score:";
     private final UserRepository userRepo;
-    private final PlayerPrinter printer;
+    private final Printer printer;
+    private final Scanner scanner;
 
-    public UserService(PlayerPrinter printer) {
+    public UserServiceImpl(UserRepository userRepo, PlayerPrinter printer, Scanner scanner) {
+        this.userRepo = userRepo;
         this.printer = printer;
-        this.userRepo = new UserRepositoryImpl();
+        this.scanner = scanner;
     }
 
-    public void createPlayer(String name) {
-        userRepo.create(new Player(name));
+    @Override
+    public void createPlayer() {
+        System.out.println(ENTER_PLAYER_NAME);
+        Player player = new Player(scanner.nextLine());
+        userRepo.create(player);
     }
 
-    public void remove(String name) {
-        userRepo.remove(
-                userRepo.FindByUsername(name)
-        );
+    @Override
+    public void remove() {
+        System.out.println(ENTER_PLAYER_NAME);
+        userRepo.remove(scanner.nextLine());
     }
 
-    public void findAll() {
-        userRepo.findAll();
-    }
-
+    @Override
     public void rank() {
         List<Player> players = userRepo.findAll();
-        printer.printRank(players);
+        printer.printElements(players);
     }
 
-    public void updateScore(String name, Double score) {
-        Player player = userRepo.updateScore(name, score);
+    @Override
+    public void updateScore() {
+        System.out.println(ENTER_PLAYER_NAME);
+        String name = scanner.nextLine();
+        System.out.println(ENTER_PLAYER_SCORE);
+        double score = Double.parseDouble(scanner.nextLine());
+        userRepo.updateScore(name, score);
     }
 
+    @Override
+    public void show() {
+
+    }
+
+    @Override
+    public void showMatchMake() {
+
+    }
+
+    @Override
+    public void clearMatchMake() {
+
+    }
+
+    @Override
+    public void matchMake() {
+
+    }
+
+    @Override
+    public void randomMatchMake() {
+
+    }
 }
