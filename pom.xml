@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>es.upm.etisi</groupId>
-    <artifactId>poo</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <artifactId>template-poo</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <licenses>
@@ -27,11 +27,6 @@
         <maven.compile.source>19</maven.compile.source>
         <!-- JUnit -->
         <junit.jupiter.version>5.9.3</junit.jupiter.version>
-        <!-- Logs -->
-        <log4j.version>2.20.0</log4j.version>
-        <!-- Database -->
-        <mysql.version>8.0.33</mysql.version>
-        <h2.version>2.1.214</h2.version>
     </properties>
 
     <dependencies>
@@ -48,33 +43,6 @@
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- Logs -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <!-- Databases -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>${h2.version}</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -84,11 +52,11 @@
                 <version>${maven.compiler.version}</version>
                 <configuration>
                     <source>${maven.compile.source}</source>
-                    <target>${maven.compile.source}</target>
-                    <release>${maven.compile.source}</release>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+                   <target>${maven.compile.source}</target>
+                   <release>${maven.compile.source}</release>
+               </configuration>
+           </plugin>
+       </plugins>
+   </build>
 
 </project>
