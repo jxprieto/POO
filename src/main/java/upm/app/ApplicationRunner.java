@@ -3,6 +3,8 @@ package upm.app;
 import upm.error.ExceptionHandler;
 import upm.error.ExceptionHandlerImpl;
 import upm.repo.UserRepositoryImpl;
+import upm.service.MatchService;
+import upm.service.MatchServiceImpl;
 import upm.service.UserService;
 import upm.service.UserServiceImpl;
 import upm.utils.PlayerPrinter;
@@ -18,9 +20,14 @@ public class ApplicationRunner {
     public static final String INVALID_OPTION = "Invalid option";
     private final Scanner scanner;
     private final UserService userService;
+
+    private final MatchService matchService;
+
     private final ExceptionHandler exceptionHandler;
 
     public ApplicationRunner() {
+        // todo refactor to use dependency injection using singleton pattern
+        this.matchService = new MatchServiceImpl();
         this.exceptionHandler = new ExceptionHandlerImpl();
         this.scanner = new Scanner(INPUT_STREAM);
         this.userService = new UserServiceImpl(
@@ -64,16 +71,16 @@ public class ApplicationRunner {
                 userService.updateScore();
                 break;
             case 6:
-                userService.showMatchMake();
+                matchService.showMatchMake();
                 break;
             case 7:
-                userService.clearMatchMake();
+                matchService.clearMatchMake();
                 break;
             case 8:
-                userService.matchMake();
+                matchService.matchMake();
                 break;
             case 9:
-                userService.randomMatchMake();
+                matchService.randomMatchMake();
                 break;
             default:
                 System.out.println(INVALID_OPTION);

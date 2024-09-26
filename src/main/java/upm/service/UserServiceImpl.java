@@ -46,32 +46,13 @@ public class UserServiceImpl implements UserService {
         System.out.println(ENTER_PLAYER_NAME);
         String name = scanner.nextLine();
         System.out.println(ENTER_PLAYER_SCORE);
-        double score = Double.parseDouble(scanner.nextLine());
+        double score;
+        score = Double.parseDouble(scanner.nextLine());// throws number format exception
         userRepo.updateScore(name, score);
     }
 
     @Override
     public void show() {
-
-    }
-
-    @Override
-    public void showMatchMake() {
-
-    }
-
-    @Override
-    public void clearMatchMake() {
-
-    }
-
-    @Override
-    public void matchMake() {
-
-    }
-
-    @Override
-    public void randomMatchMake() {
 
     }
 }

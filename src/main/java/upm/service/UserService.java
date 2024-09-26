@@ -12,11 +12,4 @@ public interface UserService {
 
         void show();
 
-        void showMatchMake();
-
-        void clearMatchMake();
-
-        void matchMake();
-
-        void randomMatchMake();
 }
