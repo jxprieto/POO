@@ -11,12 +11,12 @@ import java.util.Scanner;
 
 public class UserServiceImpl implements UserService {
 
-    public static final String ENTER_PLAYER_NAME = "Enter player name:";
-    private static final String ENTER_PLAYER_SCORE = "Enter player score:";
-    private static final String ENTER_PLAYER_USERNAME = "Enter player username:";
-    public static final String USERNAME_ALREADY_EXISTS_MESSAGE = "Username already exists, please enter a different username";
-    public static final String SCORE_UPDATED_SUCCESSFULLY = "Score updated successfully";
-    public static final String PLAYER_NOT_FOUND_ERROR_MESSAGE = "Player not found";
+    protected static final String ENTER_PLAYER_NAME = "Enter player name:";
+    protected static final String ENTER_PLAYER_SCORE = "Enter player score:";
+    protected static final String ENTER_PLAYER_USERNAME = "Enter player username:";
+    protected static final String USERNAME_ALREADY_EXISTS_MESSAGE = "Username already exists, please enter a different username";
+    protected static final String SCORE_UPDATED_SUCCESSFULLY = "Score updated successfully";
+    protected static final String PLAYER_NOT_FOUND_ERROR_MESSAGE = "Player not found";
 
 
     private final UserRepository userRepo;
@@ -31,20 +31,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void createPlayer() {
-        System.out.println(ENTER_PLAYER_NAME);
+        Printer.printMessage(ENTER_PLAYER_NAME);
         String name = scanner.nextLine();
-        System.out.println(ENTER_PLAYER_USERNAME);
+        Printer.printMessage(ENTER_PLAYER_USERNAME);
         String username;
-        while (userRepo.existsByUsername(username = scanner.nextLine().toLowerCase()))
-            System.out.println(USERNAME_ALREADY_EXISTS_MESSAGE);
+        while (userRepo.existsByUsername(username = scanner.nextLine()))
+            Printer.printMessage(USERNAME_ALREADY_EXISTS_MESSAGE);
         Player player = new Player(name, username);
         userRepo.create(player);
     }
 
     @Override
     public void remove() {
-        System.out.println(ENTER_PLAYER_NAME);
-        var username = scanner.nextLine().toLowerCase();
+        Printer.printMessage(ENTER_PLAYER_NAME);
+        var username = scanner.nextLine();
         if (userRepo.findByUsername(username) == null) throw new NoSuchElementException(PLAYER_NOT_FOUND_ERROR_MESSAGE);
         userRepo.remove(username);
     }
@@ -57,9 +57,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateScore() {
-        System.out.println(ENTER_PLAYER_USERNAME);
-        String username = scanner.nextLine().toLowerCase();
-        System.out.println(ENTER_PLAYER_SCORE);
+        Printer.printMessage(ENTER_PLAYER_USERNAME);
+        String username = scanner.nextLine();
+        Printer.printMessage(ENTER_PLAYER_SCORE);
         double score;
         score = Double.parseDouble(scanner.nextLine()); // todo throws number format exception, manage in exception handler
         userRepo.updateScore(username, score);
@@ -68,8 +68,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void show() {
-        System.out.println(ENTER_PLAYER_USERNAME);
-        String username = scanner.nextLine().toLowerCase();
+        Printer.printMessage(ENTER_PLAYER_USERNAME);
+        String username = scanner.nextLine();
         Player player = userRepo.findByUsername(username);
         printer.printElement(player);
     }

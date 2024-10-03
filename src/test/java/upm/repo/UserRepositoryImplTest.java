@@ -63,6 +63,14 @@ class UserRepositoryImplTest {
         var player = userRepository.findByUsername(john.getUsername());
         assertEquals(player, john);
     }
+    @Test
+    void shouldIgnoreCaseWhenFindByUsername() {
+        var john = new Player("john", "john");
+        database.getList().add(john);
+
+        var player = userRepository.findByUsername("JOHN");
+        assertEquals(player, john);
+    }
 
 
     @Test
@@ -75,5 +83,44 @@ class UserRepositoryImplTest {
 
         assertEquals(list.get(0).getScore(), 10);
         assertThat(list.size(), equalTo(1));
+    }
+
+    @Test
+    void shouldReturnTrueIfPlayerExistsWhenCallExistsByUsername() {
+        var john = new Player("john", "john");
+        List<Player> list = database.getList();
+        list.add(john);
+
+        assertTrue(userRepository.existsByUsername(john.getUsername()));
+    }
+    @Test
+    void shouldReturnFalseIfPlayerDoesntExistsWhenCallExistsByUsername() {
+        var john = new Player("john", "john");
+        List<Player> list = database.getList();
+        list.add(john);
+
+        assertFalse(userRepository.existsByUsername("sara"));
+    }
+    @Test
+    void shouldIgnoreCaseWhenCallExistsByUsername() {
+        var john = new Player("john", "john");
+        List<Player> list = database.getList();
+        list.add(john);
+
+        assertTrue(userRepository.existsByUsername("JOHN"));
+    }
+
+    @Test
+    void shouldFindAll() {
+        var john = new Player("John", "John");
+        var sara = new Player("Sara", "Sara");
+        var lionel = new Player("Lionel", "Lionel");
+
+        List list = database.getList();
+        list.add(john);
+        list.add(sara);
+        list.add(lionel);
+
+        assertEquals(userRepository.findAll(), list);
     }
 }

@@ -39,7 +39,7 @@ public class UserRepositoryImpl implements UserRepository{
     public Player findByUsername(String username) {
         return database.getList()
                 .stream()
-                .filter(player -> player.getUsername().equals(username))
+                .filter(player -> player.getUsername().equalsIgnoreCase(username))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }
@@ -56,7 +56,7 @@ public class UserRepositoryImpl implements UserRepository{
     public boolean existsByUsername(String username) {
         return database.getList()
                 .stream()
-                .anyMatch(player -> player.getUsername().equals(username));
+                .anyMatch(player -> player.getUsername().equalsIgnoreCase(username));
     }
 
 }
