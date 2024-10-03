@@ -39,14 +39,14 @@ public class UserRepositoryImpl implements UserRepository{
     public Player findByUsername(String username) {
         return database.getList()
                 .stream()
-                .filter(player -> player.getUsername().equals(username.toLowerCase()))
+                .filter(player -> player.getUsername().equals(username))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     public Player updateScore(String username, double score) {
-        Player player = findByUsername(username.toLowerCase());
+        Player player = findByUsername(username);
         player.setScore(score);
         sort();
         return player;
@@ -56,7 +56,7 @@ public class UserRepositoryImpl implements UserRepository{
     public boolean existsByUsername(String username) {
         return database.getList()
                 .stream()
-                .anyMatch(player -> player.getUsername().equals(username.toLowerCase()));
+                .anyMatch(player -> player.getUsername().equals(username));
     }
 
 }

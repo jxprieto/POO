@@ -5,8 +5,11 @@ import org.junit.jupiter.api.Test;
 import upm.database.InMemoryDatabase;
 import upm.model.Player;
 
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 class UserRepositoryImplTest {
 
@@ -39,24 +42,38 @@ class UserRepositoryImplTest {
 
         var list = database.getList();
         assertEquals(list.get(0), sara);
-        assertEquals(list.get(1), john);
-        assertEquals(list.get(2), sara);
+        assertEquals(list.get(1), lionel);
+        assertEquals(list.get(2), john);
     }
 
     @Test
     void shouldRemovePlayer() {
-        var john = new Player("John", "John");
+        var john = new Player("john", "john");
         database.getList().add(john);
 
         userRepository.remove(john.getUsername());
-        assertThat(database.getList()).isEmpty());
+        assertTrue(database.getList().isEmpty());
     }
 
     @Test
-    void findByUsername() {
+    void shouldFindByUsername() {
+        var john = new Player("john", "john");
+        database.getList().add(john);
+
+        var player = userRepository.findByUsername(john.getUsername());
+        assertEquals(player, john);
     }
 
+
     @Test
-    void updateScore() {
+    void shouldUpdate() {
+        var john = new Player("john", "john");
+        List<Player> list = database.getList();
+        list.add(john);
+
+        userRepository.updateScore(john.getUsername(), 10);
+
+        assertEquals(list.get(0).getScore(), 10);
+        assertThat(list.size(), equalTo(1));
     }
 }
