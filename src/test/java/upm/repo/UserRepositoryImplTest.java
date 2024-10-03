@@ -3,7 +3,7 @@ package upm.repo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import upm.database.InMemoryDatabase;
-import upm.model.Player;
+import upm.model.User;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserRepositoryImplTest {
 
     private UserRepository userRepository;
-    private final InMemoryDatabase<Player> database = new InMemoryDatabase<>();
+    private final InMemoryDatabase<User> database = new InMemoryDatabase<>();
 
     @BeforeEach
     void setUp() {
@@ -22,33 +22,15 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    void shouldAddElementsCorrectly() {
-        var user = new Player("John", "john");
+    void shouldAddElements() {
+        var user = new User("John", "john", "john");
         userRepository.create(user);
         assertEquals(database.getList().get(0), user);
     }
 
     @Test
-    void allElementsShouldBeSortedAfterUpdatingThem() {
-        var john = new Player("John", "John");
-        var sara = new Player("Sara", "Sara");
-        var lionel = new Player("Lionel", "Lionel");
-
-        userRepository.create(john);
-        userRepository.create(sara);
-        userRepository.create(lionel);
-        userRepository.updateScore(sara.getUsername(), 10);
-        userRepository.updateScore(lionel.getUsername(), 5);
-
-        var list = database.getList();
-        assertEquals(list.get(0), sara);
-        assertEquals(list.get(1), lionel);
-        assertEquals(list.get(2), john);
-    }
-
-    @Test
     void shouldRemovePlayer() {
-        var john = new Player("john", "john");
+        var john = new User("john", "john", "john");
         database.getList().add(john);
 
         userRepository.remove(john.getUsername());
@@ -57,7 +39,7 @@ class UserRepositoryImplTest {
 
     @Test
     void shouldFindByUsername() {
-        var john = new Player("john", "john");
+        var john = new User("john", "john", "john");
         database.getList().add(john);
 
         var player = userRepository.findByUsername(john.getUsername());
@@ -65,46 +47,46 @@ class UserRepositoryImplTest {
     }
     @Test
     void shouldIgnoreCaseWhenFindByUsername() {
-        var john = new Player("john", "john");
+        var john = new User("john", "john", "john");
         database.getList().add(john);
 
         var player = userRepository.findByUsername("JOHN");
         assertEquals(player, john);
     }
 
-
     @Test
     void shouldUpdate() {
-        var john = new Player("john", "john");
-        List<Player> list = database.getList();
+        var john = new User("john", "john", "john");
+        List<User> list = database.getList();
         list.add(john);
 
-        userRepository.updateScore(john.getUsername(), 10);
+        User updated = new User("new", "john", "new");
+        userRepository.updateUser(updated);
 
-        assertEquals(list.get(0).getScore(), 10);
+        assertThat(list.get(0), equalTo(updated));
         assertThat(list.size(), equalTo(1));
     }
 
     @Test
     void shouldReturnTrueIfPlayerExistsWhenCallExistsByUsername() {
-        var john = new Player("john", "john");
-        List<Player> list = database.getList();
+        var john = new User("john", "john", "john");
+        List<User> list = database.getList();
         list.add(john);
 
         assertTrue(userRepository.existsByUsername(john.getUsername()));
     }
     @Test
     void shouldReturnFalseIfPlayerDoesntExistsWhenCallExistsByUsername() {
-        var john = new Player("john", "john");
-        List<Player> list = database.getList();
+        var john = new User("john", "john", "john");
+        List<User> list = database.getList();
         list.add(john);
 
         assertFalse(userRepository.existsByUsername("sara"));
     }
     @Test
     void shouldIgnoreCaseWhenCallExistsByUsername() {
-        var john = new Player("john", "john");
-        List<Player> list = database.getList();
+        var john = new User("john", "john", "john");
+        List<User> list = database.getList();
         list.add(john);
 
         assertTrue(userRepository.existsByUsername("JOHN"));
@@ -112,9 +94,9 @@ class UserRepositoryImplTest {
 
     @Test
     void shouldFindAll() {
-        var john = new Player("John", "John");
-        var sara = new Player("Sara", "Sara");
-        var lionel = new Player("Lionel", "Lionel");
+        var john = new User("John", "John", "john");
+        var sara = new User("Sara", "Sara", "sara");
+        var lionel = new User("Lionel", "Lionel", "lionel");
 
         List list = database.getList();
         list.add(john);

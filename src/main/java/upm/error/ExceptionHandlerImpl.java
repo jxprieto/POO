@@ -1,10 +1,12 @@
 package upm.error;
 
+import upm.utils.Printer;
+
 public class ExceptionHandlerImpl implements ExceptionHandler {
 
     @Override
     public void handle(Exception e) {
-        System.out.println("An error occurred: " + e.getMessage());
+        Printer.printMessage("An error occurred: " + e.getMessage());
     }
 
 }

@@ -1,14 +1,14 @@
 package upm.repo;
 
-import upm.model.Player;
+import upm.model.User;
 
 import java.util.List;
 
 public interface UserRepository {
-    void create(Player player);
+    void create(User user);
     void remove(String username);
-    List<Player> findAll();
-    Player findByUsername(String name);
-    Player updateScore(String username, double score);
+    List<User> findAll();
+    User findByUsername(String name);
+    void updateUser(User user);
     boolean existsByUsername(String s);
 }

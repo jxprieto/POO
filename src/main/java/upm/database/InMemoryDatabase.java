@@ -1,7 +1,5 @@
 package upm.database;
 
-import upm.model.Player;
-
 import java.util.LinkedList;
 import java.util.List;
 

@@ -2,11 +2,11 @@ package upm.service;
 
 public interface UserService {
 
-        void createPlayer();
+        void createUser();
 
         void remove();
 
-        void rank();
+        void showAllUsers();
 
         void updateScore();
 

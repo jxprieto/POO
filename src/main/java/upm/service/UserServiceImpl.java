@@ -1,76 +1,78 @@
 package upm.service;
 
-import upm.model.Player;
+import upm.model.User;
 import upm.repo.UserRepository;
-import upm.utils.PlayerPrinter;
 import upm.utils.Printer;
+import upm.utils.UserPrinter;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class UserServiceImpl implements UserService {
 
-    protected static final String ENTER_PLAYER_NAME = "Enter player name:";
-    protected static final String ENTER_PLAYER_SCORE = "Enter player score:";
-    protected static final String ENTER_PLAYER_USERNAME = "Enter player username:";
+    protected static final String ENTER_USER_NAME = "Enter user name:";
+    protected static final String ENTER_USER_USERNAME = "Enter user username:";
     protected static final String USERNAME_ALREADY_EXISTS_MESSAGE = "Username already exists, please enter a different username";
-    protected static final String SCORE_UPDATED_SUCCESSFULLY = "Score updated successfully";
-    protected static final String PLAYER_NOT_FOUND_ERROR_MESSAGE = "Player not found";
+    protected static final String USER_UPDATED_SUCCESSFULLY = "user updated successfully";
+    protected static final String USER_NOT_FOUND_ERROR_MESSAGE = "User not found";
+    private static final String ENTER_USER_SURNAME = "Enter user surname:";
 
 
     private final UserRepository userRepo;
-    private final Printer<Player> printer;
+    private final Printer<User> printer;
     private final Scanner scanner;
 
-    public UserServiceImpl(UserRepository userRepo, PlayerPrinter printer, Scanner scanner) {
+    public UserServiceImpl(UserRepository userRepo, UserPrinter printer, Scanner scanner) {
         this.userRepo = userRepo;
         this.printer = printer;
         this.scanner = scanner;
     }
 
     @Override
-    public void createPlayer() {
-        Printer.printMessage(ENTER_PLAYER_NAME);
+    public void createUser() {
+        Printer.printMessage(ENTER_USER_NAME);
         String name = scanner.nextLine();
-        Printer.printMessage(ENTER_PLAYER_USERNAME);
+        Printer.printMessage(ENTER_USER_SURNAME);
+        String surname = scanner.nextLine();
+        Printer.printMessage(ENTER_USER_USERNAME);
         String username;
         while (userRepo.existsByUsername(username = scanner.nextLine()))
             Printer.printMessage(USERNAME_ALREADY_EXISTS_MESSAGE);
-        Player player = new Player(name, username);
-        userRepo.create(player);
+        User user = new User(name, username, surname);
+        userRepo.create(user);
     }
 
     @Override
     public void remove() {
-        Printer.printMessage(ENTER_PLAYER_NAME);
+        Printer.printMessage(ENTER_USER_NAME);
         var username = scanner.nextLine();
-        if (userRepo.findByUsername(username) == null) throw new NoSuchElementException(PLAYER_NOT_FOUND_ERROR_MESSAGE);
+        if (!userRepo.existsByUsername(username)) throw new NoSuchElementException(USER_NOT_FOUND_ERROR_MESSAGE);
         userRepo.remove(username);
     }
 
     @Override
-    public void rank() {
-        List<Player> players = userRepo.findAll();
-        printer.printElements(players);
+    public void showAllUsers() {
+        printer.printElements(userRepo.findAll());
     }
 
     @Override
     public void updateScore() {
-        Printer.printMessage(ENTER_PLAYER_USERNAME);
+        Printer.printMessage(ENTER_USER_USERNAME);
         String username = scanner.nextLine();
-        Printer.printMessage(ENTER_PLAYER_SCORE);
-        double score;
-        score = Double.parseDouble(scanner.nextLine()); // todo throws number format exception, manage in exception handler
-        userRepo.updateScore(username, score);
-        Printer.printMessage(SCORE_UPDATED_SUCCESSFULLY);
+        Printer.printMessage(ENTER_USER_NAME);
+        String name = scanner.nextLine();
+        Printer.printMessage(ENTER_USER_SURNAME);
+        String surname = scanner.nextLine();
+
+        userRepo.updateUser(new User(name, username, surname));
+        Printer.printMessage(USER_UPDATED_SUCCESSFULLY);
     }
 
     @Override
     public void show() {
-        Printer.printMessage(ENTER_PLAYER_USERNAME);
+        Printer.printMessage(ENTER_USER_USERNAME);
         String username = scanner.nextLine();
-        Player player = userRepo.findByUsername(username);
-        printer.printElement(player);
+        User user = userRepo.findByUsername(username);
+        printer.printElement(user);
     }
 }

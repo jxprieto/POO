@@ -1,28 +1,23 @@
 package upm.repo;
 
 import upm.database.InMemoryDatabase;
-import upm.model.Player;
+import upm.model.User;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
 public class UserRepositoryImpl implements UserRepository{
 
-    private final InMemoryDatabase<Player> database;
-    public UserRepositoryImpl(InMemoryDatabase<Player> database) {
+    private static final String USER_NOT_FOUND_ERROR_MESSAGE = "User not found";
+
+    private final InMemoryDatabase<User> database;
+    public UserRepositoryImpl(InMemoryDatabase<User> database) {
          this.database = database;
     }
 
-    public void sort(){
-        database.getList().sort(
-                (p1, p2) -> Double.compare(p2.getScore(), p1.getScore())
-        );
-    }
-
     @Override
-    public void create(Player player) {
-        database.getList().add(player);
-        sort();
+    public void create(User user) {
+        database.getList().add(user);
     }
 
     @Override
@@ -31,25 +26,30 @@ public class UserRepositoryImpl implements UserRepository{
     }
 
     @Override
-    public List<Player> findAll() {
+    public List<User> findAll() {
         return database.getList();
     }
 
     @Override
-    public Player findByUsername(String username) {
+    public User findByUsername(String username) {
         return database.getList()
                 .stream()
                 .filter(player -> player.getUsername().equalsIgnoreCase(username))
                 .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+                .orElse(null);
     }
 
     @Override
-    public Player updateScore(String username, double score) {
-        Player player = findByUsername(username);
-        player.setScore(score);
-        sort();
-        return player;
+    public void updateUser(User user) {
+        User oldUser = findByUsername(user.getUsername());
+        if (oldUser == null) throw new NoSuchElementException(USER_NOT_FOUND_ERROR_MESSAGE);
+        remove(user.getUsername());
+        try{
+            create(user);
+        }catch (Exception e){
+            create(oldUser);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

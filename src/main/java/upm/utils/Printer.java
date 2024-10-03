@@ -1,6 +1,6 @@
 package upm.utils;
 
-import upm.model.Player;
+import upm.model.User;
 
 import java.util.List;
 
@@ -10,11 +10,11 @@ public interface Printer<T> {
             Choose an option:
       
             0 -> exit
-            1 -> create player
-            2 -> update player
-            3 -> remove player
+            1 -> create user
+            2 -> update user
+            3 -> remove user
             4 -> show user
-            5 -> rank users by score
+            5 -> rank all users
             
             Write the number of the option you want to choose:
         """;
@@ -29,5 +29,5 @@ public interface Printer<T> {
 
     void printElements(List<T> elements);
 
-    void printElement(Player player);
+    void printElement(User user);
 }
