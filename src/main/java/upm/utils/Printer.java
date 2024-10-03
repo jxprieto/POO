@@ -14,7 +14,7 @@ public interface Printer<T> {
             2 -> update user
             3 -> remove user
             4 -> show user
-            5 -> rank all users
+            5 -> show all users
             
             Write the number of the option you want to choose:
         """;

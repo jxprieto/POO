@@ -60,6 +60,16 @@ public class ApplicationRunner {
         ACTIONS_BY_OPTION
                 .getOrDefault(option, DEFAULT_OPTION)
                 .run();
+        if (option != 0)
+            waitBeforeNextMenuPrint();
         return option;
+    }
+
+    private static void waitBeforeNextMenuPrint() {
+        try {
+            Thread.sleep(2500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

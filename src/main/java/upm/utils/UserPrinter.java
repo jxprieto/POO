@@ -16,11 +16,6 @@ public class UserPrinter implements Printer<User>{
     @Override
     public void printElements(final List<User> elements){ //todo manage exception as unexpected
         elements.forEach(out::println);
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

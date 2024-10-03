@@ -85,4 +85,13 @@ class UserServiceImplTest {
         verify(scanner).nextLine();
         verify(userPrinter).printElement(user);
     }
+
+    @Test
+    void shouldThrowExceptionWhenFindByIdReturnsNull() {
+        when(scanner.nextLine()).thenReturn(USERNAME);
+        when(userRepository.findByUsername(USERNAME)).thenReturn(null);
+        assertThrows(NoSuchElementException.class, () -> userService.show());
+    }
+
+
 }

@@ -1,7 +1,5 @@
 package upm.model;
 
-import java.time.LocalDate;
-
 public class User {
     private final String name;
     private final String surname;
@@ -19,6 +17,15 @@ public class User {
 
     public static UserBuilder builder() {
         return new UserBuilder();
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", username='" + username + '\'' +
+                '}';
     }
 
     public static final class UserBuilder {
@@ -46,15 +53,6 @@ public class User {
 
         public User build() {
             return new User(name, username, surname);
-        }
-
-        @Override
-        public String toString() {
-            return "UserBuilder{" +
-                    "name='" + name + '\'' +
-                    ", surname='" + surname + '\'' +
-                    ", username='" + username + '\'' +
-                    '}';
         }
     }
 }

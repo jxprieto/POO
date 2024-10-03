@@ -16,6 +16,8 @@ public class UserServiceImpl implements UserService {
     protected static final String USER_UPDATED_SUCCESSFULLY = "user updated successfully";
     protected static final String USER_NOT_FOUND_ERROR_MESSAGE = "User not found";
     private static final String ENTER_USER_SURNAME = "Enter user surname:";
+    private static final String USER_CREATED_SUCCESSFULLY = "User created successfully";
+    public static final String USER_REMOVED_SUCCESSFULLY = "User removed successfully";
 
 
     private final UserRepository userRepo;
@@ -42,6 +44,7 @@ public class UserServiceImpl implements UserService {
             Printer.printMessage(USERNAME_ALREADY_EXISTS_MESSAGE);
         User user = new User(name, username, surname);
         userRepo.create(user);
+        Printer.printMessage(USER_CREATED_SUCCESSFULLY);
     }
 
     @Override
@@ -50,6 +53,7 @@ public class UserServiceImpl implements UserService {
         var username = scanner.nextLine();
         if (!userRepo.existsByUsername(username)) throw new NoSuchElementException(USER_NOT_FOUND_ERROR_MESSAGE);
         userRepo.remove(username);
+        Printer.printMessage(USER_REMOVED_SUCCESSFULLY);
     }
 
     @Override
@@ -75,6 +79,7 @@ public class UserServiceImpl implements UserService {
         Printer.printMessage(ENTER_USER_USERNAME);
         String username = scanner.nextLine();
         User user = userRepo.findByUsername(username);
+        if (user == null) throw new NoSuchElementException(USER_NOT_FOUND_ERROR_MESSAGE);
         printer.printElement(user);
     }
 }
