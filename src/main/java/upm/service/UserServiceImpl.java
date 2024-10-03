@@ -16,6 +16,9 @@ public class UserServiceImpl implements UserService {
     private static final String ENTER_PLAYER_USERNAME = "Enter player username:";
     public static final String USERNAME_ALREADY_EXISTS_MESSAGE = "Username already exists, please enter a different username";
     public static final String SCORE_UPDATED_SUCCESSFULLY = "Score updated successfully";
+    public static final String PLAYER_NOT_FOUND_ERROR_MESSAGE = "Player not found";
+
+
     private final UserRepository userRepo;
     private final Printer<Player> printer;
     private final Scanner scanner;
@@ -42,7 +45,7 @@ public class UserServiceImpl implements UserService {
     public void remove() {
         System.out.println(ENTER_PLAYER_NAME);
         var username = scanner.nextLine();
-        if (userRepo.findByUsername(username) == null) throw new NoSuchElementException("Player not found");
+        if (userRepo.findByUsername(username) == null) throw new NoSuchElementException(PLAYER_NOT_FOUND_ERROR_MESSAGE);
         userRepo.remove(username);
     }
 

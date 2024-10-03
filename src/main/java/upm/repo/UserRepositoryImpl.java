@@ -1,52 +1,52 @@
 package upm.repo;
 
+import upm.database.InMemoryDatabase;
 import upm.model.Player;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 public class UserRepositoryImpl implements UserRepository{
-    private final List<Player> players;
 
-    public UserRepositoryImpl() {
-        players = new LinkedList<>();
+    private final InMemoryDatabase<Player> database;
+    public UserRepositoryImpl(InMemoryDatabase<Player> database) {
+         this.database = database;
     }
 
     public void sort(){
-        players.sort(
+        database.getList().sort(
                 (p1, p2) -> Double.compare(p2.getScore(), p1.getScore())
         );
     }
 
     @Override
     public void create(Player player) {
-        players.add(player);
+        database.getList().add(player);
         sort();
     }
 
     @Override
-    public void remove(String name) {
-        players.remove(findByUsername(name));
+    public void remove(String username) {
+        database.getList().remove(findByUsername(username));
     }
 
     @Override
     public List<Player> findAll() {
-        return players;
+        return database.getList();
     }
 
     @Override
     public Player findByUsername(String username) {
-        return players
+        return database.getList()
                 .stream()
-                .filter(player -> player.getUsername().equals(username))
+                .filter(player -> player.getUsername().equals(username.toLowerCase()))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     public Player updateScore(String username, double score) {
-        Player player = findByUsername(username);
+        Player player = findByUsername(username.toLowerCase());
         player.setScore(score);
         sort();
         return player;
@@ -54,9 +54,9 @@ public class UserRepositoryImpl implements UserRepository{
 
     @Override
     public boolean existsByUsername(String username) {
-        return players
+        return database.getList()
                 .stream()
-                .anyMatch(player -> player.getUsername().equals(username));
+                .anyMatch(player -> player.getUsername().equals(username.toLowerCase()));
     }
 
 }

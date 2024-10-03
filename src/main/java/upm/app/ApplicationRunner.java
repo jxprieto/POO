@@ -1,5 +1,6 @@
 package upm.app;
 
+import upm.database.InMemoryDatabase;
 import upm.error.ExceptionHandler;
 import upm.error.ExceptionHandlerImpl;
 import upm.repo.UserRepositoryImpl;
@@ -30,7 +31,7 @@ public class ApplicationRunner {
         this.exceptionHandler = new ExceptionHandlerImpl();
         this.scanner = new Scanner(INPUT_STREAM);
         this.userService = new UserServiceImpl(
-                new UserRepositoryImpl(),
+                new UserRepositoryImpl(new InMemoryDatabase<>()),
                 new PlayerPrinter(),
                 new Scanner(INPUT_STREAM)
         );

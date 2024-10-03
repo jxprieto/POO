@@ -2,51 +2,54 @@ package upm.repo;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import upm.database.InMemoryDatabase;
 import upm.model.Player;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class UserRepositoryImplTest {
 
     private UserRepository userRepository;
+    private final InMemoryDatabase<Player> database = new InMemoryDatabase<>();
 
     @BeforeEach
     void setUp() {
-        userRepository = new UserRepositoryImpl();
+        userRepository = new UserRepositoryImpl(database);
     }
 
     @Test
     void shouldAddElementsCorrectly() {
-        userRepository.create(new Player("John", "john"));
-        userRepository.findByUsername("sara");
-    }
-
-
-    @Test
-    void findAll() {
-
+        var user = new Player("John", "john");
+        userRepository.create(user);
+        assertEquals(database.getList().get(0), user);
     }
 
     @Test
-    void allElementsShouldBeSortedAfterCreatingThem() {
+    void allElementsShouldBeSortedAfterUpdatingThem() {
+        var john = new Player("John", "John");
+        var sara = new Player("Sara", "Sara");
+        var lionel = new Player("Lionel", "Lionel");
 
-        var john = new Player("John", 10);
-        var sara = new Player("Sara", 2);
-        var lionel = new Player("Lionel", 100);
         userRepository.create(john);
         userRepository.create(sara);
         userRepository.create(lionel);
+        userRepository.updateScore(sara.getUsername(), 10);
+        userRepository.updateScore(lionel.getUsername(), 5);
 
-        var list = userRepository.findAll();
-        assertEquals(list.get(0), lionel);
+        var list = database.getList();
+        assertEquals(list.get(0), sara);
         assertEquals(list.get(1), john);
         assertEquals(list.get(2), sara);
     }
 
     @Test
-    void remove() {
+    void shouldRemovePlayer() {
+        var john = new Player("John", "John");
+        database.getList().add(john);
+
+        userRepository.remove(john.getUsername());
+        assertThat(database.getList()).isEmpty());
     }
 
     @Test
