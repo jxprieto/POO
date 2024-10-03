@@ -3,8 +3,6 @@ package upm.app;
 import upm.error.ExceptionHandler;
 import upm.error.ExceptionHandlerImpl;
 import upm.repo.UserRepositoryImpl;
-import upm.service.MatchService;
-import upm.service.MatchServiceImpl;
 import upm.service.UserService;
 import upm.service.UserServiceImpl;
 import upm.utils.PlayerPrinter;
@@ -24,13 +22,11 @@ public class ApplicationRunner {
     public final Map<Integer, Runnable> ACTIONS_BY_OPTION = new HashMap<>();
     private final Scanner scanner;
     private final UserService userService;
-    private final MatchService matchService;
     private final ExceptionHandler exceptionHandler;
 
 
     public ApplicationRunner() {
         // todo refactor to use dependency injection using singleton pattern
-        this.matchService = new MatchServiceImpl();
         this.exceptionHandler = new ExceptionHandlerImpl();
         this.scanner = new Scanner(INPUT_STREAM);
         this.userService = new UserServiceImpl(
@@ -44,14 +40,10 @@ public class ApplicationRunner {
     private void mapActions() {
         ACTIONS_BY_OPTION.put(0, () -> System.out.println(EXIT_MESSAGE));
         ACTIONS_BY_OPTION.put(1, userService::createPlayer);
-        ACTIONS_BY_OPTION.put(2, userService::remove);
-        ACTIONS_BY_OPTION.put(3, userService::show);
-        ACTIONS_BY_OPTION.put(4, userService::rank);
-        ACTIONS_BY_OPTION.put(5, userService::updateScore);
-        ACTIONS_BY_OPTION.put(6, matchService::showMatchMake);
-        ACTIONS_BY_OPTION.put(7, matchService::clearMatchMake);
-        ACTIONS_BY_OPTION.put(8, matchService::matchMake);
-        ACTIONS_BY_OPTION.put(9, matchService::randomMatchMake);
+        ACTIONS_BY_OPTION.put(2, userService::updateScore);
+        ACTIONS_BY_OPTION.put(3, userService::remove);
+        ACTIONS_BY_OPTION.put(4, userService::show);
+        ACTIONS_BY_OPTION.put(5, userService::rank);
     }
 
     public void applicationLoop() {

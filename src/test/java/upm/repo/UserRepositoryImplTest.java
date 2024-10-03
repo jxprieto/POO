@@ -19,7 +19,7 @@ class UserRepositoryImplTest {
 
     @Test
     void shouldAddElementsCorrectly() {
-        userRepository.create(new Player("John", 10));
+        userRepository.create(new Player("John", "john"));
         userRepository.findByUsername("sara");
     }
 

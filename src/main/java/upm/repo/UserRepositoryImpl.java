@@ -36,20 +36,27 @@ public class UserRepositoryImpl implements UserRepository{
     }
 
     @Override
-    public Player findByUsername(String name) {
+    public Player findByUsername(String username) {
         return players
                 .stream()
-                .filter(player -> player.getName().equals(name))
+                .filter(player -> player.getUsername().equals(username))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }
 
     @Override
-    public Player updateScore(String name, double score) {
-        Player player = findByUsername(name);
+    public Player updateScore(String username, double score) {
+        Player player = findByUsername(username);
         player.setScore(score);
         sort();
         return player;
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return players
+                .stream()
+                .anyMatch(player -> player.getUsername().equals(username));
     }
 
 }

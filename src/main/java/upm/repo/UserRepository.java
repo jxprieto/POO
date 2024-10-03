@@ -9,6 +9,6 @@ public interface UserRepository {
     void remove(String name);
     List<Player> findAll();
     Player findByUsername(String name);
-
     Player updateScore(String name, double score);
+    boolean existsByUsername(String s);
 }

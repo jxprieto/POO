@@ -1,5 +1,7 @@
 package upm.utils;
 
+import upm.model.Player;
+
 import java.util.List;
 
 public interface Printer<T> {
@@ -9,20 +11,23 @@ public interface Printer<T> {
       
             0 -> exit
             1 -> create player
-            2 -> remove player
-            3 -> show
-            4 -> rank
-            5 -> score [player name];[score]
-            6 -> show_matchmake
-            7 -> clear_matchmake
-            8 -> matchmake [player1];[player2]
-            9 -> random_matchmake
+            2 -> update player
+            3 -> remove player
+            4 -> show user
+            5 -> rank users by score
+            
+            Write the number of the option you want to choose:
         """;
 
     static void printMenu(){
-        System.out.println(MENU);
+        System.out.print(MENU);
+    }
+
+    static void printMessage(String message) {
+        System.out.println(message);
     }
 
     void printElements(List<T> elements);
 
+    void printElement(Player player);
 }
