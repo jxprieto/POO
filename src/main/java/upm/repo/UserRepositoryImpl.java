@@ -11,17 +11,18 @@ public class UserRepositoryImpl implements UserRepository{
     private static final String USER_NOT_FOUND_ERROR_MESSAGE = "User not found";
 
     private final InMemoryDatabase<User> database;
-    public UserRepositoryImpl(InMemoryDatabase<User> database) {
+
+    public UserRepositoryImpl(final InMemoryDatabase<User> database) {
          this.database = database;
     }
 
     @Override
-    public void create(User user) {
+    public void create(final User user) {
         database.getList().add(user);
     }
 
     @Override
-    public void remove(String username) {
+    public void remove(final String username) {
         database.getList().remove(findByUsername(username));
     }
 
@@ -31,7 +32,7 @@ public class UserRepositoryImpl implements UserRepository{
     }
 
     @Override
-    public User findByUsername(String username) {
+    public User findByUsername(final String username) {
         return database.getList()
                 .stream()
                 .filter(player -> player.getUsername().equalsIgnoreCase(username))
@@ -40,8 +41,8 @@ public class UserRepositoryImpl implements UserRepository{
     }
 
     @Override
-    public void updateUser(User user) {
-        User oldUser = findByUsername(user.getUsername());
+    public void updateUser(final User user) {
+        final User oldUser = findByUsername(user.getUsername());
         if (oldUser == null) throw new NoSuchElementException(USER_NOT_FOUND_ERROR_MESSAGE);
         remove(user.getUsername());
         try{
@@ -53,7 +54,7 @@ public class UserRepositoryImpl implements UserRepository{
     }
 
     @Override
-    public boolean existsByUsername(String username) {
+    public boolean existsByUsername(final String username) {
         return database.getList()
                 .stream()
                 .anyMatch(player -> player.getUsername().equalsIgnoreCase(username));

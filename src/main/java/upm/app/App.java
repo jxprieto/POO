@@ -17,9 +17,9 @@ public class App {
 
     public static void main(String[] args) {
         //todo refactor to use dependency injection with singleton pattern
-        ExceptionHandler exceptionHandler = new ExceptionHandlerImpl();
-        Scanner scanner = new Scanner(INPUT_STREAM);
-        UserService userService = new UserServiceImpl(
+        final ExceptionHandler exceptionHandler = new ExceptionHandlerImpl();
+        final Scanner scanner = new Scanner(INPUT_STREAM);
+        final UserService userService = new UserServiceImpl(
                 new UserRepositoryImpl(new InMemoryDatabase<>()),
                 new UserPrinter(System.out),
                 new Scanner(INPUT_STREAM)

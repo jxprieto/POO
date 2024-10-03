@@ -5,10 +5,10 @@ import upm.model.User;
 import java.util.List;
 
 public interface UserRepository {
-    void create(User user);
-    void remove(String username);
+    void create(final User user);
+    void remove(final String username);
     List<User> findAll();
-    User findByUsername(String name);
-    void updateUser(User user);
-    boolean existsByUsername(String s);
+    User findByUsername(final String name);
+    void updateUser(final User user);
+    boolean existsByUsername(final String s);
 }

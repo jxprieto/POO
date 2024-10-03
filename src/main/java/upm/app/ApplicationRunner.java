@@ -25,7 +25,9 @@ public class ApplicationRunner {
     private final ExceptionHandler exceptionHandler;
 
 
-    public ApplicationRunner(ExceptionHandler exceptionHandler, Scanner scanner, UserService userService) {
+    public ApplicationRunner(final ExceptionHandler exceptionHandler,
+                             final Scanner scanner,
+                             final UserService userService) {
         this.exceptionHandler = exceptionHandler;
         this.scanner = scanner;
         this.userService = userService;

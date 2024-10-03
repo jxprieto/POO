@@ -9,12 +9,12 @@ public class UserPrinter implements Printer<User>{
 
     private final PrintStream out;
 
-    public UserPrinter(PrintStream out) {
+    public UserPrinter(final PrintStream out) {
         this.out = out;
     }
 
     @Override
-    public void printElements(List<User> elements){ //todo manage exception as unexpected
+    public void printElements(final List<User> elements){ //todo manage exception as unexpected
         elements.forEach(out::println);
         try {
             Thread.sleep(1000);
@@ -24,7 +24,7 @@ public class UserPrinter implements Printer<User>{
     }
 
     @Override
-    public void printElement(User user) {
+    public void printElement(final User user) {
         out.println(user);
     }
 }

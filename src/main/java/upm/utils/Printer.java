@@ -5,7 +5,7 @@ import upm.model.User;
 import java.util.List;
 
 public interface Printer<T> {
-    String MENU =
+    final String MENU =
         """
             Choose an option:
       
@@ -23,11 +23,11 @@ public interface Printer<T> {
         System.out.print(MENU);
     }
 
-    static void printMessage(String message) {
+    static void printMessage(final String message) {
         System.out.println(message);
     }
 
-    void printElements(List<T> elements);
+    void printElements(final List<T> elements);
 
-    void printElement(User user);
+    void printElement(final User user);
 }

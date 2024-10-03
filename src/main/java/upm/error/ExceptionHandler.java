@@ -2,5 +2,5 @@ package upm.error;
 
 public interface ExceptionHandler {
 
-    void handle(Exception e);
+    void handle(final Exception e);
 }

@@ -22,7 +22,9 @@ public class UserServiceImpl implements UserService {
     private final Printer<User> printer;
     private final Scanner scanner;
 
-    public UserServiceImpl(UserRepository userRepo, UserPrinter printer, Scanner scanner) {
+    public UserServiceImpl(final UserRepository userRepo,
+                           final UserPrinter printer,
+                           final Scanner scanner) {
         this.userRepo = userRepo;
         this.printer = printer;
         this.scanner = scanner;
