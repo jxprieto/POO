@@ -1,8 +1,9 @@
 package upm.model;
 
 public class User {
-    private final String name;
+
     private final String surname;
+    private final String name;
     private final String username;
 
     public User(final String name, final String username, final String surname) {
