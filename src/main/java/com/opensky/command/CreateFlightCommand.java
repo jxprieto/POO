@@ -1,12 +1,13 @@
 package com.opensky.command;
 
-public class CreateFlightCommand implements Command{
+public class CreateFlightCommand implements Command, Dependency {
+
     public static CreateFlightCommand getInstance() {
         return new CreateFlightCommand();
     }
 
     @Override
-    public void execute() {
+    public void execute(String command) {
 
     }
 }
