@@ -8,6 +8,10 @@ public interface Dependency{
      * @return an instance of the implementing class
      */
     static Dependency createInstance(){
+        //todo create an annotation to ensure that subclasses overrides just methods with the annotation,
+        // and not all static methods
+        // annotation @Override is not allowed in static methods, so we cannot use it here.
+        // annotation name could be @MustOverrideStaticMethod and in subclasses we might use @StaticOverride
         throw new UnsupportedOperationException("Only supported in subclasses. All subclasses must override this method.");
     }
 }
