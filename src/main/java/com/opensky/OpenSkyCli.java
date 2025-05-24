@@ -9,41 +9,52 @@ import com.opensky.utils.SingletonDependencyInjector;
 import java.util.Map;
 import java.util.Scanner;
 
+
 public class OpenSkyCli {
 
     private static final Scanner scanner = new Scanner(System.in);
     private static final Printer printer = new ConsolePrinter();
     private static final DependencyInjector dependencyInjector = SingletonDependencyInjector.getInstance();
+    
+    public static final String CREATE_CLIENT_OPTION = "createClient";
+    public static final String CREATE_FLIGHT_OPTION = "createFlight";
+    public static final String CREATE_RESERVATION_OPTION = "createReservation";
+    public static final String VIEW_ITINERARY_OPTION = "viewItinerary";
+    public static final String CANCEL_RESERVATION_OPTION = "cancelReservation";
+    public static final String MODIFY_RESERVATION_OPTION = "modifyReservation";
+    public static final String EXIT_OPTION = "exit";
 
-    private static final String MENU = """
+    private static final String MENU = String.format("""
         Please enter a command:
-            -> createClient name:<nombre>; edad:<edad>;email:<correo>;
+            -> %s name:<nombre>; edad:<edad>;email:<correo>;
                 phone:<teléfono>
-            -> createFlight flightNumber:<númeroVuelo>;origin:<origen>;
+            -> %s flightNumber:<númeroVuelo>;origin:<origen>;
                 destination:<destino>;departure:<fecha y hora de salida>;
                 arrival:<fecha y hora de llegada>;
                 availableSeats:<número de asientos disponibles>
-            ->  createReservation origin:<origin>;arrival:<arrival>;
+            ->  %s origin:<origin>;arrival:<arrival>;
                 seats:<número de asientos>
-            ->  viewItinerary clientId:<id cliente>
-            ->  cancelReservation reservationId:<id reserva>
-            ->  modifyReservation reservationId:<id reserva>;
+            ->  %s clientId:<id cliente>
+            ->  %s reservationId:<id reserva>
+            ->  %s reservationId:<id reserva>;
                 newFlightId:<id nuevo vuelo>;newSeats:<número de asientos>
-            -> exit
-    """;
-
+            -> %s
+    """, CREATE_CLIENT_OPTION, CREATE_FLIGHT_OPTION, CREATE_RESERVATION_OPTION, VIEW_ITINERARY_OPTION,
+            CANCEL_RESERVATION_OPTION, MODIFY_RESERVATION_OPTION, EXIT_OPTION);
+    
     private static final Map<String, Command> commands = Map.of(
-            "createClient", dependencyInjector.getDependency(CreateClientCommand.class),
-            "createFlight", dependencyInjector.getDependency(CreateFlightCommand.class),
-            "createReservation", dependencyInjector.getDependency(CreateBookingCommand.class),
-            "viewItinerary", dependencyInjector.getDependency(ViewItineraryCommand.class),
-            "cancelReservation", dependencyInjector.getDependency(CancelBookingCommand.class),
-            "modifyReservation", dependencyInjector.getDependency(ModifyBookingCommand.class)
+            CREATE_CLIENT_OPTION, dependencyInjector.getDependency(CreateClientCommand.class),
+            CREATE_FLIGHT_OPTION, dependencyInjector.getDependency(CreateFlightCommand.class),
+            CREATE_RESERVATION_OPTION, dependencyInjector.getDependency(CreateBookingCommand.class),
+            VIEW_ITINERARY_OPTION, dependencyInjector.getDependency(ViewItineraryCommand.class),
+            CANCEL_RESERVATION_OPTION, dependencyInjector.getDependency(CancelBookingCommand.class),
+            MODIFY_RESERVATION_OPTION, dependencyInjector.getDependency(ModifyBookingCommand.class)
     );
+
 
     public static void startLoop(){
         String option;
-        while (!(option = getOption()).equals("exit"))
+        while (!(option = getOption()).equals(EXIT_OPTION))
             getCommand(option).execute(option);
         printer.print("Exiting the application...\n");
     }

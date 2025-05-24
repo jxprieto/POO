@@ -12,6 +12,7 @@ public interface Dependency{
         // and not all static methods
         // annotation @Override is not allowed in static methods, so we cannot use it here.
         // annotation name could be @MustOverrideStaticMethod and in subclasses we might use @StaticOverride
+        // @StaticOverride should have supressWarnings for unused method
         throw new UnsupportedOperationException("Only supported in subclasses. All subclasses must override this method.");
     }
 }
