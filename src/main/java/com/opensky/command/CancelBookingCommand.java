@@ -1,10 +1,8 @@
 package com.opensky.command;
 
-public class CancelBookingCommand implements Command, Dependency {
+import com.opensky.utils.Dependency;
 
-    public static CancelBookingCommand getInstance() {
-        return new CancelBookingCommand();
-    }
+public class CancelBookingCommand implements Command, Dependency {
 
     @Override
     public void execute(String command) {

@@ -1,8 +1,10 @@
 package com.opensky.command;
 
+import com.opensky.utils.Dependency;
+
 public class ModifyBookingCommand implements Command, Dependency {
 
-    public static ModifyBookingCommand getInstance() {
+    public static ModifyBookingCommand createInstance() {
         return new ModifyBookingCommand();
     }
 

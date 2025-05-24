@@ -1,8 +1,10 @@
 package com.opensky.command;
 
+import com.opensky.utils.Dependency;
+
 public class ViewItineraryCommand implements Command, Dependency {
 
-    public static ViewItineraryCommand getInstance() {
+    public static ViewItineraryCommand createInstance() {
         return new ViewItineraryCommand();
     }
 

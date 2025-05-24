@@ -1,5 +1,7 @@
 package com.opensky.command;
 
+import com.opensky.utils.Dependency;
+
 public class CreateBookingCommand implements Command, Dependency {
 
     public static CreateBookingCommand createInstance() {

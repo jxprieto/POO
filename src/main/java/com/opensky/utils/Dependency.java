@@ -1,4 +1,4 @@
-package com.opensky.command;
+package com.opensky.utils;
 
 public interface Dependency{
     /**
@@ -7,7 +7,7 @@ public interface Dependency{
      *
      * @return an instance of the implementing class
      */
-    static Object createInstance(){
-        throw new UnsupportedOperationException("Only supported in subclasses");
+    static Dependency createInstance(){
+        throw new UnsupportedOperationException("Only supported in subclasses. All subclasses must override this method.");
     }
 }
