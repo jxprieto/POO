@@ -1,7 +1,5 @@
 package com.opensky.service;
 
-import com.opensky.model.Client;
-
 public interface ClientService {
-    void createClient(Client client);
+    void createClient(String name, Integer age, String email, String phone);
 }

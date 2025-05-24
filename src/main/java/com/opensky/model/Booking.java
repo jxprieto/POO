@@ -1,12 +1,13 @@
 package com.opensky.model;
 
-import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
+import lombok.experimental.SuperBuilder;
 
+@EqualsAndHashCode(callSuper = true)
 @Value
-@Builder(toBuilder = true)
-public class Booking {
-    String id;
+@SuperBuilder(toBuilder = true)
+public class Booking extends Entity {
     Client client;
     Flight flight;
     Integer numberOfSeats;

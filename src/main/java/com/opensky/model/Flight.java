@@ -1,14 +1,15 @@
 package com.opensky.model;
 
-import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
+@EqualsAndHashCode(callSuper = true)
 @Value
-@Builder(toBuilder = true)
-public class Flight {
-    String id;
+@SuperBuilder(toBuilder = true)
+public class Flight extends Entity {
     String flightNumber;
     String origin;
     String destination;
