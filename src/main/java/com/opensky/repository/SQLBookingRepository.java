@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class SQLBookingRepository implements BookingRepository, Dependency {
 
@@ -24,8 +25,8 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
 
     public static SQLBookingRepository createInstance() {
         return new SQLBookingRepository(
-                di.getDependency(SQL.class),
-                di.getDependency(SQLFlightRepositoryImpl.class)
+                di.getDependency(SQLClientRepository.class),
+                di.getDependency(SQLFlightRepository.class)
         );
     }
 
@@ -36,7 +37,7 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
 
     private static final String CREATE_BOOKING =
             "INSERT INTO bookings (id, client_id, flight_id, number_of_seats) " +
-            "VALUES (DEFAULT, ?, ?, ?)";
+            "VALUES (?, ?, ?, ?)";
 
     private static final String UPDATE_BOOKING =
             "UPDATE bookings " +
@@ -64,20 +65,15 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
         try {
             conn = Database.getConnection();
             try (final PreparedStatement stmt = conn.prepareStatement(CREATE_BOOKING, PreparedStatement.RETURN_GENERATED_KEYS)) {
-                stmt.setString(1, booking.getClient().getId());
-                stmt.setString(2, booking.getFlight().getId());
-                stmt.setInt(3, booking.getNumberOfSeats());
 
+                final String generatedId = UUID.randomUUID().toString();
+                stmt.setString(1, generatedId);
+                stmt.setString(2, booking.getClient().getId());
+                stmt.setString(3, booking.getFlight().getId());
+                stmt.setInt(4, booking.getNumberOfSeats());
                 stmt.executeUpdate();
-
-                try (final ResultSet keys = stmt.getGeneratedKeys()) {
-                    if (keys.next()) {
-                        String generatedId = keys.getString(1);
-                        return booking.toBuilder().id(generatedId).build();
-                    }
-                }
+                return booking.toBuilder().id(generatedId).build();
             }
-            throw new RuntimeException("Error while retrieving booking generated ID");
         } catch (SQLException e) {
             throw new RuntimeException("Error creating booking", e);
         } finally {

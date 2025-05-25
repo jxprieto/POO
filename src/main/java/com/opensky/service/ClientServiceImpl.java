@@ -1,7 +1,8 @@
 package com.opensky.service;
 
+import com.opensky.model.Client;
 import com.opensky.repository.ClientRepository;
-import com.opensky.repository.SQL;
+import com.opensky.repository.SQLClientRepository;
 import com.opensky.utils.Dependency;
 import com.opensky.utils.DependencyInjector;
 
@@ -15,7 +16,7 @@ public class ClientServiceImpl implements ClientService, Dependency {
     }
 
     public static ClientServiceImpl createInstance() {
-        return new ClientServiceImpl(di.getDependency(SQL.class));
+        return new ClientServiceImpl(di.getDependency(SQLClientRepository.class));
     }
 
     @Override
@@ -27,6 +28,13 @@ public class ClientServiceImpl implements ClientService, Dependency {
                 .ifPresent(_ -> {
                     throw new IllegalArgumentException("Email already exists: " + email);
                 });
+        repo.create(Client
+                .builder()
+                .name(name)
+                .age(age)
+                .email(email)
+                .phoneNumber(phone)
+                .build());
     }
 
 }

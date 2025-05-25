@@ -8,16 +8,17 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public class SQL implements ClientRepository, Dependency {
+public class SQLClientRepository implements ClientRepository, Dependency {
 
-    public static SQL createInstance() {
-        return new SQL();
+    public static SQLClientRepository createInstance() {
+        return new SQLClientRepository();
     }
 
     private static final String CREATE =
             "INSERT INTO clients (id, name, age, email, phone_number) " +
-            "VALUES (default, ?, ?, ?, ?)";
+            "VALUES (?, ?, ?, ?, ?)";
 
     private static final String UPDATE =
             "UPDATE clients SET name = ?, age = ?, email = ?, phone_number = ? " +
@@ -44,20 +45,15 @@ public class SQL implements ClientRepository, Dependency {
         try {
             conn = Database.getConnection();
             try (final PreparedStatement stmt = conn.prepareStatement(CREATE, PreparedStatement.RETURN_GENERATED_KEYS)) {
-                stmt.setString(1, client.getName());
-                stmt.setObject(2, client.getAge(), Types.INTEGER);
-                stmt.setString(3, client.getEmail());
-                stmt.setString(4, client.getPhoneNumber());
+                final String generatedId = UUID.randomUUID().toString();
+                stmt.setString(1, generatedId);
+                stmt.setString(2, client.getName());
+                stmt.setObject(3, client.getAge(), Types.INTEGER);
+                stmt.setString(4, client.getEmail());
+                stmt.setString(5, client.getPhoneNumber());
                 stmt.executeUpdate();
-
-                try (final ResultSet keys = stmt.getGeneratedKeys()) {
-                    if (keys.next()) {
-                        String generatedId = keys.getString(1);
-                        return client.toBuilder().id(generatedId).build();
-                    }
-                }
+                return client.toBuilder().id(generatedId).build();
             }
-            throw new RuntimeException("Error while retrieving client generated ID");
         } catch (SQLException e) {
             throw new RuntimeException("Error saving client", e);
         } finally {

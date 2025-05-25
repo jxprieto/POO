@@ -1,6 +1,13 @@
 package com.opensky.printer;
 
-public class ConsolePrinter implements Printer {
+import com.opensky.utils.Dependency;
+
+public class ConsolePrinter implements Printer, Dependency {
+
+    public static ConsolePrinter createInstance(){
+        return new ConsolePrinter();
+    }
+
     @Override
     public void print(String message) {
         System.out.println(message);

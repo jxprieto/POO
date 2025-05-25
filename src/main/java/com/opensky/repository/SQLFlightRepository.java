@@ -8,15 +8,16 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public class SQLFlightRepositoryImpl implements FlightRepository, Dependency {
+public class SQLFlightRepository implements FlightRepository, Dependency {
 
-    public static SQLFlightRepositoryImpl createInstance() {
-        return new SQLFlightRepositoryImpl();
+    public static SQLFlightRepository createInstance() {
+        return new SQLFlightRepository();
     }
 
     private static final String CREATE_FLIGHT =
-            "INSERT INTO flights (flight_number, origin, destination, departure_time, arrival_time, available_seats) " +
+            "INSERT INTO flights (id, flight_number, origin, destination, departure_time, arrival_time, available_seats) " +
             "VALUES (?, ?, ?, ?, ?, ?)";
 
     private static final String UPDATE_FLIGHT =
@@ -44,30 +45,22 @@ public class SQLFlightRepositoryImpl implements FlightRepository, Dependency {
         try {
             conn = Database.getConnection();
             try (final PreparedStatement stmt = conn.prepareStatement(CREATE_FLIGHT, Statement.RETURN_GENERATED_KEYS)) {
-                prepareStatementForCreateOrUpdate(flight, stmt);
+                final String generatedId = UUID.randomUUID().toString();
+                stmt.setString(1, generatedId);
+                stmt.setString(2, flight.getFlightNumber());
+                stmt.setString(3, flight.getOrigin());
+                stmt.setString(4, flight.getDestination());
+                stmt.setTimestamp(5, Timestamp.valueOf(flight.getDepartureTime()));
+                stmt.setTimestamp(6, Timestamp.valueOf(flight.getArrivalTime()));
+                stmt.setInt(7, flight.getAvailableSeats());
                 stmt.executeUpdate();
-                try (final ResultSet keys = stmt.getGeneratedKeys()) {
-                    if (keys.next()) {
-                        String generatedId = keys.getString(1);
-                        return flight.toBuilder().id(generatedId).build();
-                    }
-                }
+                return flight.toBuilder().id(generatedId).build();
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error creating flight", e);
         } finally {
             if (conn != null) Database.releaseConnection(conn);
         }
-        throw new RuntimeException("Failed to retrieve generated ID for flight");
-    }
-
-    private void prepareStatementForCreateOrUpdate(Flight flight, PreparedStatement stmt) throws SQLException {
-        stmt.setString(1, flight.getFlightNumber());
-        stmt.setString(2, flight.getOrigin());
-        stmt.setString(3, flight.getDestination());
-        stmt.setTimestamp(4, Timestamp.valueOf(flight.getDepartureTime()));
-        stmt.setTimestamp(5, Timestamp.valueOf(flight.getArrivalTime()));
-        stmt.setInt(6, flight.getAvailableSeats());
     }
 
     @Override
@@ -76,8 +69,12 @@ public class SQLFlightRepositoryImpl implements FlightRepository, Dependency {
         try {
             conn = Database.getConnection();
             try (PreparedStatement stmt = conn.prepareStatement(UPDATE_FLIGHT)) {
-                prepareStatementForCreateOrUpdate(flight, stmt);
-                stmt.setString(7, flight.getId());
+                stmt.setString(1, flight.getFlightNumber());
+                stmt.setString(2, flight.getOrigin());
+                stmt.setString(3, flight.getDestination());
+                stmt.setTimestamp(4, Timestamp.valueOf(flight.getDepartureTime()));
+                stmt.setTimestamp(5, Timestamp.valueOf(flight.getArrivalTime()));
+                stmt.setInt(6, flight.getAvailableSeats());
                 stmt.executeUpdate();
                 return flight;
             }
