@@ -1,7 +1,6 @@
-package com.opensky.service;
+package com.opensky.repository;
 
 import com.opensky.model.Client;
-import com.opensky.repository.GenericRepository;
 
 import java.util.Optional;
 

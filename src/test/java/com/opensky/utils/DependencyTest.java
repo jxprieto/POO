@@ -17,6 +17,12 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class DependencyTest {
 
+    //TODO test all onstructors are private for Dependency subclasses
+    @Test
+    void test(){
+        fail();
+    }
+
     @Test
     void staticMethodInInterfaceMustThrowException() {
         assertThrows(UnsupportedOperationException.class, Dependency::createInstance);
