@@ -1,7 +1,7 @@
 package com.opensky.service;
 
 import com.opensky.repository.ClientRepository;
-import com.opensky.repository.ClientRepositoryImpl;
+import com.opensky.repository.SQL;
 import com.opensky.utils.Dependency;
 import com.opensky.utils.DependencyInjector;
 
@@ -15,7 +15,7 @@ public class ClientServiceImpl implements ClientService, Dependency {
     }
 
     public static ClientServiceImpl createInstance() {
-        return new ClientServiceImpl(di.getDependency(ClientRepositoryImpl.class));
+        return new ClientServiceImpl(di.getDependency(SQL.class));
     }
 
     @Override

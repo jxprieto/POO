@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ClientRepositoryImpl implements ClientRepository, Dependency {
+public class SQL implements ClientRepository, Dependency {
 
-    public static ClientRepositoryImpl createInstance() {
-        return new ClientRepositoryImpl();
+    public static SQL createInstance() {
+        return new SQL();
     }
 
     private static final String CREATE =

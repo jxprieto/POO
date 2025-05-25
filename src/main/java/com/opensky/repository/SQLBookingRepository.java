@@ -15,21 +15,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class BookingRepositoryImpl implements BookingRepository, Dependency {
+public class SQLBookingRepository implements BookingRepository, Dependency {
 
     private final static DependencyInjector di = DependencyInjector.getDefaultImplementation();
 
     private final ClientRepository clientRepo;
     private final FlightRepository flightRepo;
 
-    public static BookingRepositoryImpl createInstance() {
-        return new BookingRepositoryImpl(
-                di.getDependency(ClientRepositoryImpl.class),
-                di.getDependency(FlightRepositoryImpl.class)
+    public static SQLBookingRepository createInstance() {
+        return new SQLBookingRepository(
+                di.getDependency(SQL.class),
+                di.getDependency(SQLFlightRepositoryImpl.class)
         );
     }
 
-    private BookingRepositoryImpl(ClientRepository clientRepo, FlightRepository flightRepo) {
+    private SQLBookingRepository(ClientRepository clientRepo, FlightRepository flightRepo) {
         this.clientRepo = clientRepo;
         this.flightRepo = flightRepo;
     }

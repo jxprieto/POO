@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class FlightRepositoryImpl implements FlightRepository, Dependency {
+public class SQLFlightRepositoryImpl implements FlightRepository, Dependency {
 
-    public static FlightRepositoryImpl createInstance() {
-        return new FlightRepositoryImpl();
+    public static SQLFlightRepositoryImpl createInstance() {
+        return new SQLFlightRepositoryImpl();
     }
 
     private static final String CREATE_FLIGHT =
