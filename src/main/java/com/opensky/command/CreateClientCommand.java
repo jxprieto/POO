@@ -11,7 +11,7 @@ public class CreateClientCommand implements Command, Dependency {
 
     private static final DependencyInjector di = DependencyInjector.getDefaultImplementation();
 
-    public static final String WHITE_SPACE = " ";
+    public static final String WHITE_SPACE = "\\s*;+\\s*|\\s+";
     public static final String COLON = ":";
 
     private final ClientService service;
