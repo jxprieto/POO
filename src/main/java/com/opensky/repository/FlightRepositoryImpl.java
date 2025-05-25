@@ -43,7 +43,7 @@ public class FlightRepositoryImpl implements FlightRepository, Dependency {
         Connection conn = null;
         try {
             conn = Database.getConnection();
-            try (PreparedStatement stmt = conn.prepareStatement(CREATE_FLIGHT, Statement.RETURN_GENERATED_KEYS)) {
+            try (final PreparedStatement stmt = conn.prepareStatement(CREATE_FLIGHT, Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setString(1, flight.getFlightNumber());
                 stmt.setString(2, flight.getOrigin());
                 stmt.setString(3, flight.getDestination());
@@ -52,7 +52,7 @@ public class FlightRepositoryImpl implements FlightRepository, Dependency {
                 stmt.setInt(6, flight.getAvailableSeats());
                 stmt.executeUpdate();
 
-                try (ResultSet keys = stmt.getGeneratedKeys()) {
+                try (final ResultSet keys = stmt.getGeneratedKeys()) {
                     if (keys.next()) {
                         String generatedId = keys.getString(1);
                         return flight.toBuilder().id(generatedId).build();
@@ -62,9 +62,7 @@ public class FlightRepositoryImpl implements FlightRepository, Dependency {
         } catch (SQLException e) {
             throw new RuntimeException("Error creating flight", e);
         } finally {
-            if (conn != null) {
-                Database.releaseConnection(conn);
-            }
+            if (conn != null) Database.releaseConnection(conn);
         }
         throw new RuntimeException("Failed to retrieve generated ID for flight");
     }
@@ -99,11 +97,11 @@ public class FlightRepositoryImpl implements FlightRepository, Dependency {
         Connection conn = null;
         try {
             conn = Database.getConnection();
-            try (PreparedStatement stmt = conn.prepareStatement(READ_FLIGHT)) {
+            try (final PreparedStatement stmt = conn.prepareStatement(READ_FLIGHT)) {
                 stmt.setString(1, id);
-                try (ResultSet rs = stmt.executeQuery()) {
+                try (final ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
-                        Flight flight = Flight.builder()
+                        final Flight flight = Flight.builder()
                                 .id(rs.getString("id"))
                                 .flightNumber(rs.getString("flight_number"))
                                 .origin(rs.getString("origin"))
@@ -131,7 +129,7 @@ public class FlightRepositoryImpl implements FlightRepository, Dependency {
         Connection conn = null;
         try {
             conn = Database.getConnection();
-            try (PreparedStatement stmt = conn.prepareStatement(DELETE_FLIGHT)) {
+            try (final PreparedStatement stmt = conn.prepareStatement(DELETE_FLIGHT)) {
                 stmt.setString(1, id);
                 stmt.executeUpdate();
             }
@@ -146,14 +144,14 @@ public class FlightRepositoryImpl implements FlightRepository, Dependency {
 
     @Override
     public List<Flight> findAll() {
-        List<Flight> flights = new ArrayList<>();
+        final List<Flight> flights = new ArrayList<>();
         Connection conn = null;
         try {
             conn = Database.getConnection();
-            try (PreparedStatement stmt = conn.prepareStatement(FIND_ALL_FLIGHTS);
+            try (final PreparedStatement stmt = conn.prepareStatement(FIND_ALL_FLIGHTS);
                  ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    Flight flight = Flight.builder()
+                    final Flight flight = Flight.builder()
                             .id(rs.getString("id"))
                             .flightNumber(rs.getString("flight_number"))
                             .origin(rs.getString("origin"))
@@ -168,9 +166,7 @@ public class FlightRepositoryImpl implements FlightRepository, Dependency {
         } catch (SQLException e) {
             throw new RuntimeException("Error finding all flights", e);
         } finally {
-            if (conn != null) {
-                Database.releaseConnection(conn);
-            }
+            if (conn != null) Database.releaseConnection(conn);
         }
         return flights;
     }

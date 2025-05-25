@@ -63,14 +63,14 @@ public class BookingRepositoryImpl implements BookingRepository, Dependency {
         Connection conn = null;
         try {
             conn = Database.getConnection();
-            try (PreparedStatement stmt = conn.prepareStatement(CREATE_BOOKING, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            try (final PreparedStatement stmt = conn.prepareStatement(CREATE_BOOKING, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 stmt.setString(1, booking.getClient().getId());
                 stmt.setString(2, booking.getFlight().getId());
                 stmt.setInt(3, booking.getNumberOfSeats());
 
                 stmt.executeUpdate();
 
-                try (ResultSet keys = stmt.getGeneratedKeys()) {
+                try (final ResultSet keys = stmt.getGeneratedKeys()) {
                     if (keys.next()) {
                         String generatedId = keys.getString(1);
                         return booking.toBuilder().id(generatedId).build();
@@ -81,9 +81,7 @@ public class BookingRepositoryImpl implements BookingRepository, Dependency {
         } catch (SQLException e) {
             throw new RuntimeException("Error creating booking", e);
         } finally {
-            if (conn != null) {
-                Database.releaseConnection(conn);
-            }
+            if (conn != null) Database.releaseConnection(conn);
         }
     }
 
@@ -92,7 +90,7 @@ public class BookingRepositoryImpl implements BookingRepository, Dependency {
         Connection conn = null;
         try {
             conn = Database.getConnection();
-            try (PreparedStatement stmt = conn.prepareStatement(UPDATE_BOOKING)) {
+            try (final PreparedStatement stmt = conn.prepareStatement(UPDATE_BOOKING)) {
                 stmt.setString(1, booking.getClient().getId());
                 stmt.setString(2, booking.getFlight().getId());
                 stmt.setInt(3, booking.getNumberOfSeats());
@@ -117,14 +115,14 @@ public class BookingRepositoryImpl implements BookingRepository, Dependency {
         Connection conn = null;
         try {
             conn = Database.getConnection();
-            try (PreparedStatement stmt = conn.prepareStatement(READ_BOOKING)) {
+            try (final PreparedStatement stmt = conn.prepareStatement(READ_BOOKING)) {
                 stmt.setString(1, id);
-                try (ResultSet rs = stmt.executeQuery()) {
+                try (final ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
-                        String bookingId = rs.getString("id");
-                        String clientId = rs.getString("client_id");
-                        String flightId = rs.getString("flight_id");
-                        int seats = rs.getInt("number_of_seats");
+                        final String bookingId = rs.getString("id");
+                        final String clientId = rs.getString("client_id");
+                        final String flightId = rs.getString("flight_id");
+                        final int seats = rs.getInt("number_of_seats");
 
                         final Client client = getFullClient(clientId, bookingId);
                         final Flight flight = getFullFlight(flightId, bookingId);
@@ -154,39 +152,37 @@ public class BookingRepositoryImpl implements BookingRepository, Dependency {
         Connection conn = null;
         try {
             conn = Database.getConnection();
-            try (PreparedStatement stmt = conn.prepareStatement(DELETE_BOOKING)) {
+            try (final PreparedStatement stmt = conn.prepareStatement(DELETE_BOOKING)) {
                 stmt.setString(1, id);
                 stmt.executeUpdate();
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error deleting booking with id: " + id, e);
         } finally {
-            if (conn != null) {
-                Database.releaseConnection(conn);
-            }
+            if (conn != null) Database.releaseConnection(conn);
         }
     }
 
     @Override
     public List<Booking> findAll() {
-        List<Booking> bookings = new ArrayList<>();
+        final List<Booking> bookings = new ArrayList<>();
         Connection conn = null;
 
         try {
             conn = Database.getConnection();
-            try (PreparedStatement stmt = conn.prepareStatement(FIND_ALL_BOOKINGS);
-                 ResultSet rs = stmt.executeQuery()) {
+            try (final PreparedStatement stmt = conn.prepareStatement(FIND_ALL_BOOKINGS);
+                 final ResultSet rs = stmt.executeQuery()) {
 
                 while (rs.next()) {
-                    String id = rs.getString("id");
-                    String clientId = rs.getString("client_id");
-                    String flightId = rs.getString("flight_id");
-                    int numberOfSeats = rs.getInt("number_of_seats");
+                    final String id = rs.getString("id");
+                    final String clientId = rs.getString("client_id");
+                    final String flightId = rs.getString("flight_id");
+                    final int numberOfSeats = rs.getInt("number_of_seats");
 
                     final Client client = getFullClient(clientId, id);
                     final Flight flight = getFullFlight(flightId, id);
 
-                    Booking booking = Booking.builder()
+                    final Booking booking = Booking.builder()
                             .id(id)
                             .client(client)
                             .flight(flight)
@@ -199,25 +195,21 @@ public class BookingRepositoryImpl implements BookingRepository, Dependency {
         } catch (SQLException e) {
             throw new RuntimeException("Error retrieving all bookings", e);
         } finally {
-            if (conn != null) {
-                Database.releaseConnection(conn);
-            }
+            if (conn != null) Database.releaseConnection(conn);
         }
 
         return bookings;
     }
 
     private Flight getFullFlight(String flightId, String id) {
-        final Flight flight = flightRepo.read(flightId).orElseThrow(
+        return flightRepo.read(flightId).orElseThrow(
                 ()-> new RuntimeException("Flight not found for booking: " + id + " with flight ID: " + flightId)
         );
-        return flight;
     }
 
     private Client getFullClient(String clientId, String id) {
-        final Client client = clientRepo.read(clientId).orElseThrow(
+        return clientRepo.read(clientId).orElseThrow(
                 () -> new RuntimeException("Client not found for booking: " + id + " with client ID: " + clientId)
         );
-        return client;
     }
 }

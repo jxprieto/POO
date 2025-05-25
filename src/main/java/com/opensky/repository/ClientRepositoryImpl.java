@@ -50,7 +50,7 @@ public class ClientRepositoryImpl implements ClientRepository, Dependency {
                 stmt.setString(4, client.getPhoneNumber());
                 stmt.executeUpdate();
 
-                try (ResultSet keys = stmt.getGeneratedKeys()) {
+                try (final ResultSet keys = stmt.getGeneratedKeys()) {
                     if (keys.next()) {
                         String generatedId = keys.getString(1);
                         return client.toBuilder().id(generatedId).build();
@@ -93,7 +93,7 @@ public class ClientRepositoryImpl implements ClientRepository, Dependency {
             conn = Database.getConnection();
             final PreparedStatement stmt = conn.prepareStatement(READ);
             stmt.setString(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
+            try (final ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     final Client client = Client
                             .builder()
@@ -120,14 +120,12 @@ public class ClientRepositoryImpl implements ClientRepository, Dependency {
         Connection conn = null;
         try {
             conn = Database.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(DELETE);
+            final PreparedStatement stmt = conn.prepareStatement(DELETE);
 
             stmt.setString(1, id);
-            int affectedRows = stmt.executeUpdate();
+            final int affectedRows = stmt.executeUpdate();
 
-            if (affectedRows == 0) {
-                throw new SQLException("No client found with id: " + id);
-            }
+            if (affectedRows == 0) throw new SQLException("No client found with id: " + id);
 
         } catch (SQLException e) {
             throw new RuntimeException("Error deleting client with id " + id, e);
@@ -146,7 +144,7 @@ public class ClientRepositoryImpl implements ClientRepository, Dependency {
             final PreparedStatement stmt = conn.prepareStatement(FIND_ALL);
             final ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                Client client = Client.builder()
+                final Client client = Client.builder()
                         .id(rs.getString("id"))
                         .name(rs.getString("name"))
                         .age(rs.getInt("age"))
@@ -169,9 +167,9 @@ public class ClientRepositoryImpl implements ClientRepository, Dependency {
         Connection conn = null;
         try {
             conn = Database.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(FIND_BY_EMAIL);
+            final PreparedStatement stmt = conn.prepareStatement(FIND_BY_EMAIL);
             stmt.setString(1, email);
-            try (ResultSet rs = stmt.executeQuery()) {
+            try (final ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     Client client = Client.builder()
                             .id(rs.getString("id"))
