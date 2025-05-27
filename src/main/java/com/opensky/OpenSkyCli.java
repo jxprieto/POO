@@ -25,19 +25,13 @@ public class OpenSkyCli {
     public static final String EXIT_OPTION = "exit";
 
     private static final String MENU = String.format("""
-        Please enter a command:
-            -> %s name:<nombre>; edad:<edad>;email:<correo>;
-                phone:<teléfono>
-            -> %s flightNumber:<númeroVuelo>;origin:<origen>;
-                destination:<destino>;departure:<fecha y hora de salida>;
-                arrival:<fecha y hora de llegada>;
-                availableSeats:<número de asientos disponibles>
-            ->  %s origin:<origin>;arrival:<arrival>;
-                seats:<número de asientos>
-            ->  %s clientId:<id cliente>
-            ->  %s reservationId:<id reserva>
-            ->  %s reservationId:<id reserva>;
-                newFlightId:<id nuevo vuelo>;newSeats:<número de asientos>
+        Please enter a command (date format is yyyy-MM-dd HH:mm)
+            -> %s name:<nombre>; edad:<edad>;email:<correo>;phone:<teléfono>
+            -> %s flightNumber:<númeroVuelo>;origin:<origen>;destination:<destino>;departure:<fecha y hora de salida>;arrival:<fecha y hora de llegada>;availableSeats:<número de asientos disponibles>
+            -> %s origin:<origin>;arrival:<arrival>;seats:<número de asientos>
+            -> %s clientId:<id cliente>
+            -> %s reservationId:<id reserva>
+            -> %s reservationId:<id reserva>;newFlightId:<id nuevo vuelo>;newSeats:<número de asientos>
             -> %s
     """, CREATE_CLIENT_OPTION, CREATE_FLIGHT_OPTION, CREATE_RESERVATION_OPTION, VIEW_ITINERARY_OPTION,
             CANCEL_RESERVATION_OPTION, MODIFY_RESERVATION_OPTION, EXIT_OPTION);
@@ -52,10 +46,10 @@ public class OpenSkyCli {
     );
 
 
-    public static void startLoop(){
+    public static void run(){
         String option;
         while (!(option = getOption()).equals(EXIT_OPTION))
-            getCommand(option).execute(option);
+            getCommand(option).execute(option);// cambiar para meter un error handler y pasarle la lambda
         printer.print("Exiting the application...\n");
     }
 
