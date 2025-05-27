@@ -4,11 +4,15 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @EqualsAndHashCode(callSuper = true)
 @Value
 @SuperBuilder(toBuilder = true)
-public class Booking extends Entity {
+public class Booking extends Entity<String> {
     Client client;
-    Flight flight;
+    List<Flight> flights;
+    LocalDateTime bookingDate;
     Integer numberOfSeats;
 }

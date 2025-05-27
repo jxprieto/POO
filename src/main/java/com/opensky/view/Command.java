@@ -1,4 +1,4 @@
-package com.opensky.command;
+package com.opensky.view;
 
 public interface Command {
     void execute(String command);

@@ -1,6 +1,6 @@
 package com.opensky;
 
-import com.opensky.command.*;
+import com.opensky.view.*;
 import com.opensky.printer.ConsolePrinter;
 import com.opensky.printer.Printer;
 import com.opensky.utils.DependencyInjector;

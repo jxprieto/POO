@@ -7,7 +7,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @Value
 @SuperBuilder(toBuilder = true)
-public class Client extends Entity {
+public class Client extends Entity<String> {
     String name;
     Integer age;
     String email;

@@ -1,16 +1,18 @@
 package com.opensky.repository;
 
-import com.opensky.Database;
 import com.opensky.model.Client;
 import com.opensky.utils.Dependency;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class SQLClientRepository implements ClientRepository, Dependency {
+public class SQLClientRepository extends SQLRepository implements ClientRepository, Dependency {
 
     public static SQLClientRepository createInstance() {
         return new SQLClientRepository();
@@ -41,9 +43,7 @@ public class SQLClientRepository implements ClientRepository, Dependency {
 
     @Override
     public Client create(Client client) {
-        Connection conn = null;
-        try {
-            conn = Database.getConnection();
+        return withConnection(conn -> {
             try (final PreparedStatement stmt = conn.prepareStatement(CREATE, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 final String generatedId = UUID.randomUUID().toString();
                 stmt.setString(1, generatedId);
@@ -54,20 +54,13 @@ public class SQLClientRepository implements ClientRepository, Dependency {
                 stmt.executeUpdate();
                 return client.toBuilder().id(generatedId).build();
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error saving client", e);
-        } finally {
-            if (conn != null) Database.releaseConnection(conn);
-        }
+        }, "Error creating client: " + client.getName());
     }
 
     @Override
     public Client update(Client client) {
-        Connection conn = null;
-        try {
-            conn = Database.getConnection();
+        return withConnection(conn -> {
             final PreparedStatement stmt = conn.prepareStatement(UPDATE);
-
             stmt.setString(1, client.getName());
             stmt.setObject(2, client.getAge(), Types.INTEGER);
             stmt.setString(3, client.getEmail());
@@ -75,70 +68,51 @@ public class SQLClientRepository implements ClientRepository, Dependency {
             stmt.setString(5, client.getId());
             stmt.executeUpdate();
             return client;
-        } catch (SQLException e) {
-            throw new RuntimeException("Error updating client", e);
-        } finally {
-            if (conn != null) Database.releaseConnection(conn);
-        }
+        }, "Error updating client with ID: " + client.getId());
     }
 
     @Override
     public Optional<Client> read(String id) {
-        Connection conn = null;
-        try {
-            conn = Database.getConnection();
+        return withConnection(conn -> {
             final PreparedStatement stmt = conn.prepareStatement(READ);
             stmt.setString(1, id);
             try (final ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    final Client client = Client
-                            .builder()
-                            .id(rs.getString("id"))
-                            .name(rs.getString("name"))
-                            .age(rs.getInt("age"))
-                            .email(rs.getString("email"))
-                            .phoneNumber(rs.getString("phone_number"))
-                            .build();
-                    return Optional.of(client);
+                    return Optional.of(
+                            Client
+                                .builder()
+                                .id(rs.getString("id"))
+                                .name(rs.getString("name"))
+                                .age(rs.getInt("age"))
+                                .email(rs.getString("email"))
+                                .phoneNumber(rs.getString("phone_number"))
+                                .build());
                 }
+                return Optional.empty();
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error reading client with id " + id, e);
-        } finally {
-            if (conn != null) Database.releaseConnection(conn);
-        }
-        Database.releaseConnection(conn);
-        return Optional.empty();
+        }, "Error reading client with id: " + id);
+
     }
 
     @Override
     public void deleteById(String id) {
-        Connection conn = null;
-        try {
-            conn = Database.getConnection();
+        withConnection(conn -> {
             final PreparedStatement stmt = conn.prepareStatement(DELETE);
 
             stmt.setString(1, id);
             final int affectedRows = stmt.executeUpdate();
 
             if (affectedRows == 0) throw new SQLException("No client found with id: " + id);
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error deleting client with id " + id, e);
-        } finally {
-            if (conn != null) Database.releaseConnection(conn);
-        }
+        }, "Error deleting client with ID: " + id);
     }
 
 
     @Override
     public List<Client> findAll() {
-        final List<Client> clients = new ArrayList<>();
-        Connection conn = null;
-        try {
-            conn = Database.getConnection();
+        return withConnection(conn -> {
             final PreparedStatement stmt = conn.prepareStatement(FIND_ALL);
             final ResultSet rs = stmt.executeQuery();
+            final List<Client> clients = new ArrayList<>();
             while (rs.next()) {
                 final Client client = Client.builder()
                         .id(rs.getString("id"))
@@ -149,20 +123,13 @@ public class SQLClientRepository implements ClientRepository, Dependency {
                         .build();
                 clients.add(client);
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving all clients", e);
-        } finally {
-            if (conn != null) Database.releaseConnection(conn);
-        }
-        return clients;
+            return clients;
+        }, "Error finding all clients");
     }
 
     @Override
     public Optional<Client> findByEmail(String email) {
-        Connection conn = null;
-        try {
-            conn = Database.getConnection();
+        return withConnection(conn -> {
             final PreparedStatement stmt = conn.prepareStatement(FIND_BY_EMAIL);
             stmt.setString(1, email);
             try (final ResultSet rs = stmt.executeQuery()) {
@@ -176,13 +143,8 @@ public class SQLClientRepository implements ClientRepository, Dependency {
                             .build();
                     return Optional.of(client);
                 }
+                return Optional.empty();
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error finding client with email " + email, e);
-        } finally {
-            if (conn != null) Database.releaseConnection(conn);
-        }
-        return Optional.empty();
+        }, "Error finding client by email: " + email);
     }
 }

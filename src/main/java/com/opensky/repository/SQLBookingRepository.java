@@ -1,6 +1,5 @@
 package com.opensky.repository;
 
-import com.opensky.Database;
 import com.opensky.model.Booking;
 import com.opensky.model.Client;
 import com.opensky.model.Flight;
@@ -16,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class SQLBookingRepository implements BookingRepository, Dependency {
+public class SQLBookingRepository extends SQLRepository implements BookingRepository, Dependency {
 
     private final static DependencyInjector di = DependencyInjector.getDefaultImplementation();
 
@@ -36,12 +35,12 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
     }
 
     private static final String CREATE_BOOKING =
-            "INSERT INTO bookings (id, client_id, flight_id, number_of_seats) " +
+            "INSERT INTO bookings (id, client_id, number_of_seats) " +
             "VALUES (?, ?, ?, ?)";
 
     private static final String UPDATE_BOOKING =
             "UPDATE bookings " +
-            "SET client_id = ?, flight_id = ?, number_of_seats = ?" +
+            "SET client_id = ?, number_of_seats = ?" +
             " WHERE id = ?";
     
     private static final String READ_BOOKING =
@@ -49,158 +48,90 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
             "FROM bookings " +
             "WHERE id = ?";
 
-    private static final String DELETE_BOOKING =
+    private static final String DELETE_BOOKING_BY_ID =
             "DELETE FROM bookings" +
             " WHERE id = ?";
     
     private static final String FIND_ALL_BOOKINGS =
-            "SELECT id, client_id, flight_id, number_of_seats " +
+            "SELECT id, client_id, number_of_seats " +
             "FROM bookings";
 
+    private static final String DELETE_FROM_BOOKING_FLIGHTS_BY_BOOKING_ID =
+            "DELETE FROM booking_flights " +
+            "WHERE booking_id = ?";
+
+    private static final String INSERT_FLIGHTS_IN_BOOKING =
+            "INSERT INTO booking_flights (booking_id, flight_id) " +
+            "VALUES (?, ?)";
 
 
     @Override
     public Booking create(Booking booking) {
-        Connection conn = null;
-        try {
-            conn = Database.getConnection();
+        return withConnection(conn -> {
             try (final PreparedStatement stmt = conn.prepareStatement(CREATE_BOOKING, PreparedStatement.RETURN_GENERATED_KEYS)) {
-
                 final String generatedId = UUID.randomUUID().toString();
                 stmt.setString(1, generatedId);
                 stmt.setString(2, booking.getClient().getId());
-                stmt.setString(3, booking.getFlight().getId());
-                stmt.setInt(4, booking.getNumberOfSeats());
+                stmt.setInt(3, booking.getNumberOfSeats());
                 stmt.executeUpdate();
                 return booking.toBuilder().id(generatedId).build();
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error creating booking", e);
-        } finally {
-            if (conn != null) Database.releaseConnection(conn);
-        }
+        }, "Error creating booking with ID: " + booking.getId());
     }
 
     @Override
     public Booking update(Booking booking) {
-        Connection conn = null;
-        try {
-            conn = Database.getConnection();
+        return withConnection(conn -> {
             try (final PreparedStatement stmt = conn.prepareStatement(UPDATE_BOOKING)) {
                 stmt.setString(1, booking.getClient().getId());
-                stmt.setString(2, booking.getFlight().getId());
-                stmt.setInt(3, booking.getNumberOfSeats());
-                stmt.setString(4, booking.getId());
-
+                stmt.setInt(2, booking.getNumberOfSeats());
+                stmt.setString(3, booking.getId());
                 int updated = stmt.executeUpdate();
-                if (updated == 0) {
+                if (updated == 0)
                     throw new RuntimeException("Booking not found for update: " + booking.getId());
-                }
-
-                return booking;
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error updating booking", e);
-        } finally {
-            if (conn != null) Database.releaseConnection(conn);
-        }
+            deleteFlightsForBooking(booking, conn);
+            addFLightsToBooking(booking, conn);
+            return booking;
+        }, "Error updating booking with ID: " + booking.getId());
     }
 
     @Override
     public Optional<Booking> read(String id) {
-        Connection conn = null;
-        try {
-            conn = Database.getConnection();
+        return withConnection(conn -> {
             try (final PreparedStatement stmt = conn.prepareStatement(READ_BOOKING)) {
                 stmt.setString(1, id);
                 try (final ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        final String bookingId = rs.getString("id");
-                        final String clientId = rs.getString("client_id");
-                        final String flightId = rs.getString("flight_id");
-                        final int seats = rs.getInt("number_of_seats");
-
-                        final Client client = getFullClient(clientId, bookingId);
-                        final Flight flight = getFullFlight(flightId, bookingId);
-
-                        final Booking booking = Booking.builder()
-                                .id(bookingId)
-                                .client(client)
-                                .flight(flight)
-                                .numberOfSeats(seats)
-                                .build();
-
-                        return Optional.of(booking);
-                    } else {
-                        return Optional.empty();
-                    }
+                    return rs.next() ? getBookingFromResultSet(rs) : Optional.empty();
                 }
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error reading booking", e);
-        } finally {
-            if (conn != null) Database.releaseConnection(conn);
-        }
+        }, "Error reading booking with ID: " + id);
     }
 
     @Override
     public void deleteById(String id) {
-        Connection conn = null;
-        try {
-            conn = Database.getConnection();
-            try (final PreparedStatement stmt = conn.prepareStatement(DELETE_BOOKING)) {
+        withConnection(conn ->{
+            try (final PreparedStatement stmt = conn.prepareStatement(DELETE_BOOKING_BY_ID)) {
                 stmt.setString(1, id);
                 stmt.executeUpdate();
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error deleting booking with id: " + id, e);
-        } finally {
-            if (conn != null) Database.releaseConnection(conn);
-        }
+        }, "Error deleting booking with ID: " + id);
     }
 
     @Override
     public List<Booking> findAll() {
-        final List<Booking> bookings = new ArrayList<>();
-        Connection conn = null;
-
-        try {
-            conn = Database.getConnection();
+        return withConnection(conn -> {
+            final List<Booking> bookings = new ArrayList<>();
             try (final PreparedStatement stmt = conn.prepareStatement(FIND_ALL_BOOKINGS);
                  final ResultSet rs = stmt.executeQuery()) {
 
                 while (rs.next()) {
-                    final String id = rs.getString("id");
-                    final String clientId = rs.getString("client_id");
-                    final String flightId = rs.getString("flight_id");
-                    final int numberOfSeats = rs.getInt("number_of_seats");
-
-                    final Client client = getFullClient(clientId, id);
-                    final Flight flight = getFullFlight(flightId, id);
-
-                    final Booking booking = Booking.builder()
-                            .id(id)
-                            .client(client)
-                            .flight(flight)
-                            .numberOfSeats(numberOfSeats)
-                            .build();
-
-                    bookings.add(booking);
+                    getBookingFromResultSet(rs)
+                            .ifPresent(bookings::add);
                 }
+                return bookings;
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving all bookings", e);
-        } finally {
-            if (conn != null) Database.releaseConnection(conn);
-        }
-
-        return bookings;
-    }
-
-    private Flight getFullFlight(String flightId, String id) {
-        return flightRepo.read(flightId).orElseThrow(
-                ()-> new RuntimeException("Flight not found for booking: " + id + " with flight ID: " + flightId)
-        );
+        }, "Error retrieving all bookings");
     }
 
     private Client getFullClient(String clientId, String id) {
@@ -208,4 +139,40 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
                 () -> new RuntimeException("Client not found for booking: " + id + " with client ID: " + clientId)
         );
     }
+
+    private Optional<Booking> getBookingFromResultSet(ResultSet rs) throws SQLException {
+        final String bookingId = rs.getString("id");
+        final String clientId = rs.getString("client_id");
+        final int seats = rs.getInt("number_of_seats");
+
+        final Client client = getFullClient(clientId, bookingId);
+        final List<Flight> flights = flightRepo.getAllFlightsByBookingId(bookingId);
+
+        final Booking booking = Booking.builder()
+                .id(bookingId)
+                .client(client)
+                .flights(flights)
+                .numberOfSeats(seats)
+                .build();
+        return Optional.of(booking);
+    }
+
+    private static void deleteFlightsForBooking(Booking booking, Connection conn) throws SQLException {
+        try (final PreparedStatement deleteStmt = conn.prepareStatement(DELETE_FROM_BOOKING_FLIGHTS_BY_BOOKING_ID)) {
+            deleteStmt.setString(1, booking.getId());
+            deleteStmt.executeUpdate();
+        }
+    }
+
+    private static void addFLightsToBooking(Booking booking, Connection conn) throws SQLException {
+        try (final PreparedStatement insertStmt = conn.prepareStatement(INSERT_FLIGHTS_IN_BOOKING)) {
+            for (Flight flight : booking.getFlights()) {
+                insertStmt.setString(1, booking.getId());
+                insertStmt.setString(2, flight.getId());
+                insertStmt.addBatch();
+            }
+            insertStmt.executeBatch();
+        }
+    }
+
 }

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class SQLFlightRepository implements FlightRepository, Dependency {
+public class SQLFlightRepository extends SQLRepository implements FlightRepository, Dependency  {
 
     public static SQLFlightRepository createInstance() {
         return new SQLFlightRepository();
@@ -38,12 +38,17 @@ public class SQLFlightRepository implements FlightRepository, Dependency {
             "SELECT * " +
             "FROM flights";
 
+    private static final String FIND_ALL_FLIGHTS_BY_BOOKING_ID =
+            "SELECT * " +
+            "FROM flights" +
+            "WNERE id IN " +
+                "(SELECT flight_id FROM bookings WHERE booking_id = ?)";
+
+
 
     @Override
     public Flight create(Flight flight) {
-        Connection conn = null;
-        try {
-            conn = Database.getConnection();
+        return withConnection(conn ->{
             try (final PreparedStatement stmt = conn.prepareStatement(CREATE_FLIGHT, Statement.RETURN_GENERATED_KEYS)) {
                 final String generatedId = UUID.randomUUID().toString();
                 stmt.setString(1, generatedId);
@@ -56,18 +61,12 @@ public class SQLFlightRepository implements FlightRepository, Dependency {
                 stmt.executeUpdate();
                 return flight.toBuilder().id(generatedId).build();
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error creating flight", e);
-        } finally {
-            if (conn != null) Database.releaseConnection(conn);
-        }
+        }, "Error creating flight with ID: " + flight.getId());
     }
 
     @Override
     public Flight update(Flight flight) {
-        Connection conn = null;
-        try {
-            conn = Database.getConnection();
+        return withConnection(conn -> {
             try (PreparedStatement stmt = conn.prepareStatement(UPDATE_FLIGHT)) {
                 stmt.setString(1, flight.getFlightNumber());
                 stmt.setString(2, flight.getOrigin());
@@ -78,91 +77,82 @@ public class SQLFlightRepository implements FlightRepository, Dependency {
                 stmt.executeUpdate();
                 return flight;
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error updating flight", e);
-        } finally {
-            if (conn != null) {
-                Database.releaseConnection(conn);
-            }
-        }
+        }, "Error updating flight with ID: " + flight.getId());
     }
 
     @Override
     public Optional<Flight> read(String id) {
-        Connection conn = null;
-        try {
-            conn = Database.getConnection();
+        return withConnection(conn -> {
             try (final PreparedStatement stmt = conn.prepareStatement(READ_FLIGHT)) {
                 stmt.setString(1, id);
-                try (final ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        final Flight flight = Flight.builder()
-                                .id(rs.getString("id"))
-                                .flightNumber(rs.getString("flight_number"))
-                                .origin(rs.getString("origin"))
-                                .destination(rs.getString("destination"))
-                                .departureTime(rs.getTimestamp("departure_time").toLocalDateTime())
-                                .arrivalTime(rs.getTimestamp("arrival_time").toLocalDateTime())
-                                .availableSeats(rs.getInt("available_seats"))
-                                .build();
-                        return Optional.of(flight);
+                return getFlight(stmt);
+            }
+        }, "Error reading flight with ID: " + id);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        withConnection(conn -> {
+            try (final PreparedStatement stmt = conn.prepareStatement(DELETE_FLIGHT)) {
+                stmt.setString(1, id);
+                stmt.executeUpdate();
+            }
+        }, "Error deleting flight with ID: " + id);
+    }
+
+    @Override
+    public List<Flight> findAll() {
+        return withConnection(conn -> {
+            conn = Database.getConnection();
+            final List<Flight> flights = new ArrayList<>();
+            try (final PreparedStatement stmt = conn.prepareStatement(FIND_ALL_FLIGHTS);
+                 ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    final Flight flight = buildFlightFromResultSet(rs);
+                    flights.add(flight);
+                }
+            }
+            return flights;
+        }, "Error finding all flights");
+    }
+
+    @Override
+    public List<Flight> getAllFlightsByBookingId(String id) {
+        return withConnection(conn -> {
+            final List<Flight> flights = new ArrayList<>();
+            try (PreparedStatement stmt = conn.prepareStatement(FIND_ALL_FLIGHTS_BY_BOOKING_ID)) {
+                stmt.setString(1, id);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        flights.add(buildFlightFromResultSet(rs));
                     }
                 }
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error reading flight", e);
-        } finally {
-            if (conn != null) {
-                Database.releaseConnection(conn);
+            return flights;
+        }, "Error finding flights by booking ID: " + id);
+    }
+
+    private Optional<Flight> getFlight(PreparedStatement stmt) throws SQLException {
+        try (final ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                final Flight flight = buildFlightFromResultSet(rs);
+                return Optional.of(flight);
             }
         }
         return Optional.empty();
     }
 
-    @Override
-    public void deleteById(String id) {
-        Connection conn = null;
-        try {
-            conn = Database.getConnection();
-            try (final PreparedStatement stmt = conn.prepareStatement(DELETE_FLIGHT)) {
-                stmt.setString(1, id);
-                stmt.executeUpdate();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error deleting flight", e);
-        } finally {
-            if (conn != null) {
-                Database.releaseConnection(conn);
-            }
-        }
+    private static Flight buildFlightFromResultSet(ResultSet rs) throws SQLException {
+        return Flight.builder()
+                .id(rs.getString("id"))
+                .flightNumber(rs.getString("flight_number"))
+                .origin(rs.getString("origin"))
+                .destination(rs.getString("destination"))
+                .departureTime(rs.getTimestamp("departure_time").toLocalDateTime())
+                .arrivalTime(rs.getTimestamp("arrival_time").toLocalDateTime())
+                .availableSeats(rs.getInt("available_seats"))
+                .build();
     }
 
-    @Override
-    public List<Flight> findAll() {
-        final List<Flight> flights = new ArrayList<>();
-        Connection conn = null;
-        try {
-            conn = Database.getConnection();
-            try (final PreparedStatement stmt = conn.prepareStatement(FIND_ALL_FLIGHTS);
-                 ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    final Flight flight = Flight.builder()
-                            .id(rs.getString("id"))
-                            .flightNumber(rs.getString("flight_number"))
-                            .origin(rs.getString("origin"))
-                            .destination(rs.getString("destination"))
-                            .departureTime(rs.getTimestamp("departure_time").toLocalDateTime())
-                            .arrivalTime(rs.getTimestamp("arrival_time").toLocalDateTime())
-                            .availableSeats(rs.getInt("available_seats"))
-                            .build();
-                    flights.add(flight);
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error finding all flights", e);
-        } finally {
-            if (conn != null) Database.releaseConnection(conn);
-        }
-        return flights;
-    }
+
 }

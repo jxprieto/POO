@@ -1,4 +1,4 @@
-package com.opensky.command;
+package com.opensky.view;
 
 import com.opensky.printer.ConsolePrinter;
 import com.opensky.printer.Printer;

@@ -5,6 +5,6 @@ import lombok.experimental.SuperBuilder;
 
 @SuperBuilder(toBuilder = true)
 @Getter
-public abstract class Entity {
-    String id;
+public abstract class Entity<T> {
+    T id;
 }

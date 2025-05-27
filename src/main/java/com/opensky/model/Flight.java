@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @Value
 @SuperBuilder(toBuilder = true)
-public class Flight extends Entity {
+public class Flight extends Entity<String> {
     String flightNumber;
     String origin;
     String destination;
