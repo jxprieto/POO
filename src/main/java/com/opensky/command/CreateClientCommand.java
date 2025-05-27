@@ -3,7 +3,7 @@ package com.opensky.command;
 import com.opensky.printer.ConsolePrinter;
 import com.opensky.printer.Printer;
 import com.opensky.service.ClientService;
-import com.opensky.service.ClientServiceImpl;
+import com.opensky.service.DefaultClientService;
 import com.opensky.utils.Dependency;
 import com.opensky.utils.DependencyInjector;
 
@@ -24,7 +24,7 @@ public class CreateClientCommand implements Command, Dependency {
 
     public static CreateClientCommand createInstance() {
         return new CreateClientCommand(
-                di.getDependency(ClientServiceImpl.class),
+                di.getDependency(DefaultClientService.class),
                 di.getDependency(ConsolePrinter.class)
         );
     }

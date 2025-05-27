@@ -8,20 +8,20 @@ import com.opensky.repository.SQLClientRepository;
 import com.opensky.utils.Dependency;
 import com.opensky.utils.DependencyInjector;
 
-public class ClientServiceImpl implements ClientService, Dependency {
+public class DefaultClientService implements ClientService, Dependency {
 
     private static final DependencyInjector di = DependencyInjector.getDefaultImplementation();
 
     private final ClientRepository repo;
     private final Printer printer;
 
-    public ClientServiceImpl(ClientRepository repo, Printer printer) {
+    public DefaultClientService(ClientRepository repo, Printer printer) {
         this.repo = repo;
         this.printer = printer;
     }
 
-    public static ClientServiceImpl createInstance() {
-        return new ClientServiceImpl(
+    public static DefaultClientService createInstance() {
+        return new DefaultClientService(
                 di.getDependency(SQLClientRepository.class),
                 di.getDependency(ConsolePrinter.class)
         );
