@@ -1,4 +1,4 @@
-package com.opensky;
+package com.opensky.utils;
 
 import java.io.InputStream;
 import java.sql.Connection;
@@ -10,10 +10,10 @@ import java.util.Properties;
 
 public class Database {
 
+    private static final Object lock = new Object();
     private static final String PROPERTIES_FILE = "db.properties";
-    private static final int POOL_SIZE = 5;
+    private static final int POOL_SIZE = 1;
     private static final List<Connection> pool = new ArrayList<>(POOL_SIZE);
-    private static final List<Connection> usedConnections = new ArrayList<>();
 
     private static String url;
     private static String user;
@@ -22,9 +22,8 @@ public class Database {
     static {
         try {
             initializeDatabaseProperties();
-            for (int i = 0; i < POOL_SIZE; i++) {
+            for (int i = 0; i < POOL_SIZE; i++)
                 pool.add(createConnection());
-            }
         } catch (SQLException e) {
             throw new ExceptionInInitializerError("Failed to initialize database connections: " + e.getMessage());
         }
@@ -44,29 +43,28 @@ public class Database {
         }
     }
 
-    public static synchronized Connection getConnection() throws SQLException {
-        if (pool.isEmpty()) throw new SQLException("No hay conexiones disponibles");
+    public static Connection getConnection() throws SQLException {
+        synchronized (lock) {
+            while (pool.isEmpty()) {
+                try {
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new SQLException("Thread interrupted while waiting for a connection", e);
+                }
+            }
+            Connection connection = pool.removeLast();
+            if (!connection.isValid(2)) connection = createConnection();
 
-        Connection connection = pool.removeLast();
-        if (!connection.isValid(2)) connection = createConnection();
-
-        usedConnections.add(connection);
-        return connection;
+            return connection;
+        }
     }
 
-    public static synchronized void releaseConnection(Connection connection) {
-        usedConnections.remove(connection);
-        pool.add(connection);
-    }
-    public static synchronized void closeAllConnections() {
-        usedConnections.forEach(conn -> {
-            try { conn.close(); } catch (SQLException ignored) {}
-        });
-        pool.forEach(conn -> {
-            try { conn.close(); } catch (SQLException ignored) {}
-        });
-        usedConnections.clear();
-        pool.clear();
+    public static void releaseConnection(Connection connection) {
+        synchronized (lock){
+            pool.add(connection);
+            lock.notify();
+        }
     }
 
     private static Connection createConnection() throws SQLException {

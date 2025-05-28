@@ -12,13 +12,15 @@ public class CreateBookingCommand implements Command, Dependency {
     public static final DependencyInjector di = DependencyInjector.getDefaultImplementation();
 
     public static CreateBookingCommand createInstance() {
-        return new CreateBookingCommand();
+        return new CreateBookingCommand(
+                di.getDependency(DefaultBookingService.class)
+        );
     }
 
     private final BookingService service;
 
-    public CreateBookingCommand() {
-        this.service = di.getDependency(DefaultBookingService.class);
+    public CreateBookingCommand(BookingService service) {
+        this.service = service;
     }
 
     @Override

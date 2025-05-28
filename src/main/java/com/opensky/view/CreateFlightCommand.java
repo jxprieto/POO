@@ -15,13 +15,15 @@ public class CreateFlightCommand implements Command, Dependency {
     private static final DateTimeFormatter formater = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public static CreateFlightCommand createInstance() {
-        return new CreateFlightCommand();
+        return new CreateFlightCommand(
+                di.getDependency(DefaultFlightService.class)
+        );
     }
 
     private final FlightService service;
 
-    public CreateFlightCommand() {
-        this.service = di.getDependency(DefaultFlightService.class);
+    public CreateFlightCommand(FlightService service) {
+        this.service = service;
     }
 
     @Override

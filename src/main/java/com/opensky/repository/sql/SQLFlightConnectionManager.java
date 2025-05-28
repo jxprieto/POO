@@ -1,6 +1,6 @@
 package com.opensky.repository.sql;
 
-import com.opensky.Database;
+import com.opensky.utils.Database;
 import com.opensky.model.Flight;
 import com.opensky.repository.FlightRepository;
 import com.opensky.utils.Dependency;

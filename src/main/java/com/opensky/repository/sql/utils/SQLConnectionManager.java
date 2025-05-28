@@ -1,6 +1,6 @@
 package com.opensky.repository.sql.utils;
 
-import com.opensky.Database;
+import com.opensky.utils.Database;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -22,16 +22,18 @@ public class DefaultBookingService implements BookingService, Dependency {
     private static final DependencyInjector di = DependencyInjector.getDefaultImplementation();
 
     public static DefaultBookingService createInstance() {
-        return new DefaultBookingService();
+        return new DefaultBookingService(
+                di.getDependency(SQLBookingConnectionManager.class),
+                di.getDependency(SQLFlightConnectionManager.class)
+        );
     }
 
     private final BookingRepository bookingRepository;
     private final FlightRepository flightRepository;
 
-
-    public DefaultBookingService() {
-        this.bookingRepository = di.getDependency(SQLBookingConnectionManager.class);
-        this.flightRepository = di.getDependency(SQLFlightConnectionManager.class);
+    public DefaultBookingService(final BookingRepository bookingRepository, final FlightRepository flightRepository) {
+        this.bookingRepository = bookingRepository;
+        this.flightRepository = flightRepository;
     }
 
     @Override

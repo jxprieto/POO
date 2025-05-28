@@ -17,6 +17,14 @@ public class DefaultClientService implements ClientService, Dependency {
 
     private static final DependencyInjector di = DependencyInjector.getDefaultImplementation();
 
+    public static DefaultClientService createInstance() {
+        return new DefaultClientService(
+                di.getDependency(SQLClientConnectionManager.class),
+                di.getDependency(SQLBookingConnectionManager.class),
+                di.getDependency(ConsolePrinter.class)
+        );
+    }
+
     private final ClientRepository repo;
     private final BookingRepository bookingRepository;
     private final Printer printer;
@@ -25,14 +33,6 @@ public class DefaultClientService implements ClientService, Dependency {
         this.repo = repo;
         this.bookingRepository = bookingRepository;
         this.printer = printer;
-    }
-
-    public static DefaultClientService createInstance() {
-        return new DefaultClientService(
-                di.getDependency(SQLClientConnectionManager.class),
-                di.getDependency(SQLBookingConnectionManager.class),
-                di.getDependency(ConsolePrinter.class)
-        );
     }
 
     @Override

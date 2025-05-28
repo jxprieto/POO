@@ -12,15 +12,17 @@ public class DefaultFlightService implements FlightService, Dependency {
 
     private static final DependencyInjector di = DependencyInjector.getDefaultImplementation();
 
-    public DefaultFlightService() {
-        this.flightRepository = di.getDependency(SQLFlightConnectionManager.class);
-    }
-
     public static DefaultFlightService createInstance() {
-        return new DefaultFlightService();
+        return new DefaultFlightService(
+                di.getDependency(SQLFlightConnectionManager.class)
+        );
     }
 
     private final FlightRepository flightRepository;
+
+    public DefaultFlightService(FlightRepository flightRepository) {
+        this.flightRepository = flightRepository;
+    }
 
     @Override
     public void createFlight(String flightNumber, String origin, String destination, LocalDateTime departure, LocalDateTime arrival, Integer availableSeats) {
