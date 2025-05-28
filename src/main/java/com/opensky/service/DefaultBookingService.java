@@ -1,7 +1,7 @@
 package com.opensky.service;
 
 import com.opensky.exception.EntityNotFoundException;
-import com.opensky.exception.NotAvailableFlight;
+import com.opensky.exception.NotAvailableFlightException;
 import com.opensky.model.Booking;
 import com.opensky.model.Flight;
 import com.opensky.repository.BookingRepository;
@@ -44,6 +44,8 @@ public class DefaultBookingService implements BookingService, Dependency {
                 .filter(flight -> flight.getAvailableSeats() >= numberOfSeats)
                 .toList();
         final List<Flight> bookingFlights = getBestConnection(flights, origin, arrival);
+        if (bookingFlights.isEmpty())
+            throw new NotAvailableFlightException(origin, arrival, numberOfSeats);
         final Booking booking = new Booking(
                 null, // TODO: Client should be passed here, but we don't have a client in this context
                 bookingFlights,
@@ -115,7 +117,7 @@ public class DefaultBookingService implements BookingService, Dependency {
         if (index >= 0) {
             int previousSeats = booking.getNumberOfSeatsPerFlight().get(index);
             if (numberOfSeats > previousSeats && flight.getAvailableSeats() < numberOfSeats - previousSeats)
-                throw new NotAvailableFlight(flightId, numberOfSeats);
+                throw new NotAvailableFlightException(flightId, numberOfSeats);
             var newNumSeats = new ArrayList<>(booking.getNumberOfSeatsPerFlight());
             newNumSeats.set(index, numberOfSeats);
             var toUpdate = booking

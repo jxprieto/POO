@@ -1,10 +1,11 @@
 package com.opensky;
 
-import com.opensky.view.*;
+import com.opensky.execution.CommandExecutor;
 import com.opensky.printer.ConsolePrinter;
 import com.opensky.printer.Printer;
 import com.opensky.utils.DependencyInjector;
 import com.opensky.utils.SingletonDependencyInjector;
+import com.opensky.view.*;
 
 import java.util.Map;
 import java.util.Scanner;
@@ -17,6 +18,7 @@ public class OpenSkyCli {
     private static final Scanner scanner = new Scanner(System.in);
     private static final Printer printer = new ConsolePrinter();
     private static final DependencyInjector dependencyInjector = SingletonDependencyInjector.getInstance();
+    private static final CommandExecutor executor = dependencyInjector.getDependency(CommandExecutor.class);
 
     private static final Map<String, Command> commands = Map.of(
             CREATE_CLIENT_COMMAND, dependencyInjector.getDependency(CreateClientCommand.class),
@@ -31,7 +33,7 @@ public class OpenSkyCli {
     public static void run(){
         String input;
         while (!(input = getOption()).equals(EXIT_OPTION))
-            getCommand(input).execute(input); // cambiar para meter un error handler y pasarle la lambda
+            executor.executeCommand(getCommand(input), input);
         printer.print("Exiting the application...\n");
     }
 

@@ -25,7 +25,7 @@ public class ModifyBookingCommand implements Command, Dependency {
     @Override
     public void execute(String command) {
         String[] args = command.split(ARGUMENT_SPLIT_REGEX);
-        if (args.length != 7)
+        if (args.length != 4)
             throw new FormatDataException("Invalid input for " + MODIFY_BOOKING_COMMAND + " expected is: " + MODIFY_BOOKING);
 
         final String bookingId = args[1].split(COLON)[1];

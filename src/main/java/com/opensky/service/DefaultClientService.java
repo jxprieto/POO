@@ -49,9 +49,8 @@ public class DefaultClientService implements ClientService, Dependency {
     }
 
     @Override
-    public void showItinerary(String id) {
-        final List<Booking> bookings = bookingRepository.findBokingsByClientId(id);
-        printer.print("Client with id " + id + " has the following bookings:" + bookings);
+    public List<Booking> getAllClientBookings(String id) {
+        return bookingRepository.findBokingsByClientId(id);
     }
 
 }
