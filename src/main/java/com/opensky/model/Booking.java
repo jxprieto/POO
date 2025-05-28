@@ -1,5 +1,6 @@
 package com.opensky.model;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
@@ -12,7 +13,9 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 public class Booking extends Entity<String> {
     Client client;
-    List<Flight> flights;
+    @Builder.Default
+    List<Flight> flights = List.of();
     LocalDateTime bookingDate;
-    Integer numberOfSeats;
+    @Builder.Default
+    List<Integer> numberOfSeatsPerFlight = List.of();
 }

@@ -2,8 +2,8 @@ package com.opensky.repository;
 
 import com.opensky.model.Flight;
 
-import java.util.List;
+import java.util.Map;
 
 public interface FlightRepository extends GenericRepository<Flight> {
-    List<Flight> getAllFlightsByBookingId(String id);
+    Map<Flight, Integer> getAllFlightsByBookingId(String id);
 }

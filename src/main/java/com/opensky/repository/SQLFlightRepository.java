@@ -5,10 +5,7 @@ import com.opensky.model.Flight;
 import com.opensky.utils.Dependency;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class SQLFlightRepository extends SQLRepository implements FlightRepository, Dependency  {
 
@@ -18,7 +15,7 @@ public class SQLFlightRepository extends SQLRepository implements FlightReposito
 
     private static final String CREATE_FLIGHT =
             "INSERT INTO flights (id, flight_number, origin, destination, departure_time, arrival_time, available_seats) " +
-            "VALUES (?, ?, ?, ?, ?, ?)";
+            "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     private static final String UPDATE_FLIGHT =
             "UPDATE flights " +
@@ -39,10 +36,9 @@ public class SQLFlightRepository extends SQLRepository implements FlightReposito
             "FROM flights";
 
     private static final String FIND_ALL_FLIGHTS_BY_BOOKING_ID =
-            "SELECT * " +
-            "FROM flights" +
-            "WNERE id IN " +
-                "(SELECT flight_id FROM bookings WHERE booking_id = ?)";
+            "SELECT f.id, f.flight_number, f.origin, f.destination, f.departure_time, f.arrival_time, f.available_seats, bf.number_of_seats" +
+            "FROM flights f JOIN booking_flights bf " +
+            "ON f.id = bf.flight_id and bf.booking_id = ?";
 
 
 
@@ -74,6 +70,7 @@ public class SQLFlightRepository extends SQLRepository implements FlightReposito
                 stmt.setTimestamp(4, Timestamp.valueOf(flight.getDepartureTime()));
                 stmt.setTimestamp(5, Timestamp.valueOf(flight.getArrivalTime()));
                 stmt.setInt(6, flight.getAvailableSeats());
+                stmt.setString(7, flight.getId());
                 stmt.executeUpdate();
                 return flight;
             }
@@ -117,19 +114,20 @@ public class SQLFlightRepository extends SQLRepository implements FlightReposito
     }
 
     @Override
-    public List<Flight> getAllFlightsByBookingId(String id) {
+    public Map<Flight, Integer> getAllFlightsByBookingId(String bookingId) {
         return withConnection(conn -> {
-            final List<Flight> flights = new ArrayList<>();
+            final Map<Flight, Integer> flights = new HashMap<>();
             try (PreparedStatement stmt = conn.prepareStatement(FIND_ALL_FLIGHTS_BY_BOOKING_ID)) {
-                stmt.setString(1, id);
+                stmt.setString(1, bookingId);
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
-                        flights.add(buildFlightFromResultSet(rs));
+                        Flight flight = buildFlightFromResultSet(rs);
+                        flights.put(flight, rs.getInt("number_of_seats"));
                     }
                 }
             }
-            return flights;
-        }, "Error finding flights by booking ID: " + id);
+            return Collections.unmodifiableMap(flights);
+        }, "Error finding flights by booking ID: " + bookingId);
     }
 
     private Optional<Flight> getFlight(PreparedStatement stmt) throws SQLException {

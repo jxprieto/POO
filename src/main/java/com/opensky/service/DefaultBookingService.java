@@ -1,5 +1,7 @@
 package com.opensky.service;
 
+import com.opensky.exception.EntityNotFoundException;
+import com.opensky.exception.NotAvailableFlight;
 import com.opensky.model.Booking;
 import com.opensky.model.Flight;
 import com.opensky.repository.BookingRepository;
@@ -10,6 +12,8 @@ import com.opensky.utils.Dependency;
 import com.opensky.utils.DependencyInjector;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -40,10 +44,9 @@ public class DefaultBookingService implements BookingService, Dependency {
         final List<Flight> bookingFlights = getBestConnection(flights, origin, arrival);
         final Booking booking = new Booking(
                 null, // TODO: Client should be passed here, but we don't have a client in this context
-                //passengerName,
                 bookingFlights,
                 LocalDateTime.now(),
-                numberOfSeats
+                Collections.nCopies(bookingFlights.size(), numberOfSeats)
         );
         bookingRepository.create(booking);
     }
@@ -96,5 +99,30 @@ public class DefaultBookingService implements BookingService, Dependency {
     @Override
     public void cancelBooking(String bookingId) {
         bookingRepository.deleteById(bookingId);
+    }
+
+    @Override
+    public void modifyBooking(String bookingId, String flightId, int numberOfSeats) {
+        var booking = bookingRepository.read(bookingId)
+                .orElseThrow(() -> new EntityNotFoundException("Booking not found for id: " + bookingId));
+        var flight = flightRepository.read(flightId)
+                .orElseThrow(() -> new EntityNotFoundException("Flight not found for id: " + flightId));
+
+        var bookingFlights = booking.getFlights();
+        var index = bookingFlights.indexOf(flight);
+        if (index >= 0) {
+            int previousSeats = booking.getNumberOfSeatsPerFlight().get(index);
+            if (numberOfSeats > previousSeats && flight.getAvailableSeats() < numberOfSeats - previousSeats)
+                throw new NotAvailableFlight(flightId, numberOfSeats);
+            var newNumSeats = new ArrayList<>(booking.getNumberOfSeatsPerFlight());
+            newNumSeats.set(index, numberOfSeats);
+            var toUpdate = booking
+                    .toBuilder()
+                    .numberOfSeatsPerFlight(Collections.unmodifiableList(newNumSeats))
+                    .build();
+            bookingRepository.update(toUpdate);
+        } else {
+            throw new EntityNotFoundException("Flight not part of the booking: " + flightId);
+        }
     }
 }

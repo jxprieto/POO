@@ -20,7 +20,6 @@ CREATE TABLE bookings (
                          id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
                          client_id VARCHAR(36) NOT NULL,
                          booking_date DATETIME NOT NULL,
-                         number_of_seats INT NOT NULL,
 
                          CONSTRAINT fk_booking_client FOREIGN KEY (client_id) REFERENCES clients(id)
                              ON DELETE CASCADE
@@ -30,6 +29,7 @@ CREATE TABLE bookings (
 CREATE TABLE booking_flights (
                                  booking_id VARCHAR(36) NOT NULL,
                                  flight_id VARCHAR(36) NOT NULL,
+                                 number_of_seats INT NOT NULL,
 
                                  PRIMARY KEY (booking_id, flight_id),
 
