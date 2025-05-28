@@ -17,10 +17,16 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class DependencyTest {
 
-    //TODO test all onstructors are private for Dependency subclasses
+    private static final Reflections reflections = new Reflections("com.opensky");
+
     @Test
-    void test(){
-        fail();
+    void allConstructorsForImplementationsArePrivate(){
+        Set<Class<? extends Dependency>> implementations = reflections.getSubTypesOf(Dependency.class);
+        implementations.forEach(implementation -> {
+            boolean allPrivate = Arrays.stream(implementation.getDeclaredConstructors())
+                    .allMatch(constructor -> Modifier.isPrivate(constructor.getModifiers()));
+            assertTrue(allPrivate, "Not all constructors of " + implementation.getName() + " are private");
+        });
     }
 
     @Test
@@ -30,12 +36,10 @@ class DependencyTest {
 
     @Test
     void allSubclassesMustOverrideCreateInstance() {
-
         var staticMethodsInInterface = Arrays.stream(Dependency.class.getMethods())
                 .filter(o-> Modifier.isStatic(o.getModifiers()))
                 .toList();
 
-        Reflections reflections = new Reflections("com.opensky");
         Set<Class<? extends Dependency>> implementations = reflections.getSubTypesOf(Dependency.class);
         implementations.forEach(implementation ->
             staticMethodsInInterface.forEach(staticMethodInInterface->

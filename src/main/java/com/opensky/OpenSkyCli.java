@@ -15,26 +15,37 @@ import static com.opensky.view.Command.*;
 
 public class OpenSkyCli {
 
+    private static final DependencyInjector di = SingletonDependencyInjector.getInstance();
     private static final Scanner scanner = new Scanner(System.in);
-    private static final Printer printer = new ConsolePrinter();
-    private static final DependencyInjector dependencyInjector = SingletonDependencyInjector.getInstance();
-    private static final CommandExecutor executor = dependencyInjector.getDependency(CommandExecutor.class);
+    private static final Printer printer = di.getDependency(ConsolePrinter.class);
+    private static final CommandExecutor executor = di.getDependency(CommandExecutor.class);
 
     private static final Map<String, Command> commands = Map.of(
-            CREATE_CLIENT_COMMAND, dependencyInjector.getDependency(CreateClientCommand.class),
-            CREATE_FLIGHT_COMMAND, dependencyInjector.getDependency(CreateFlightCommand.class),
-            CREATE_BOOKING_COMMAND, dependencyInjector.getDependency(CreateBookingCommand.class),
-            VIEW_ITINERARY_COMMAND, dependencyInjector.getDependency(ViewItineraryCommand.class),
-            CANCEL_BOOKING_COMMAND, dependencyInjector.getDependency(CancelBookingCommand.class),
-            MODIFY_BOOKING_COMMAND, dependencyInjector.getDependency(ModifyBookingCommand.class)
+            CREATE_CLIENT_COMMAND, di.getDependency(CreateClientViewCommand.class),
+            CREATE_FLIGHT_COMMAND, di.getDependency(CreateFlightViewCommand.class),
+            CREATE_BOOKING_COMMAND, di.getDependency(CreateBookingViewCommand.class),
+            VIEW_ITINERARY_COMMAND, di.getDependency(ViewItineraryViewCommand.class),
+            CANCEL_BOOKING_COMMAND, di.getDependency(CancelBookingViewCommand.class),
+            MODIFY_BOOKING_COMMAND, di.getDependency(ModifyBookingViewCommand.class)
     );
 
 
     public static void run(){
         String input;
-        while (!(input = getOption()).equals(EXIT_OPTION))
+        while (!(input = getOption()).equals(EXIT_OPTION)){
             executor.executeCommand(getCommand(input), input);
+            waitAndCatchException();
+            printer.print("");
+        }
         printer.print("Exiting the application...\n");
+    }
+
+    private static void waitAndCatchException() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

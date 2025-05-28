@@ -44,6 +44,7 @@ public class SQLClientConnectionManager implements ClientRepository, Dependency 
             "FROM clients " +
             "WHERE email = ?";
 
+    private SQLClientConnectionManager() {}
 
     @Override
     public Client create(Client client) {

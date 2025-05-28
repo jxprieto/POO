@@ -36,7 +36,7 @@ public interface Command {
             -> %s %s
             -> %s %s
             -> %s %s
-            -> %s
+            -> %s (exit)
         """,
             CREATE_CLIENT_COMMAND, CREATE_CLIENT,
             CREATE_FLIGHT_COMMAND, CREATE_BOOKING_COMMAND,

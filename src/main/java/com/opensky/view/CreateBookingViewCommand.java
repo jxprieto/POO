@@ -7,19 +7,19 @@ import com.opensky.utils.Dependency;
 import com.opensky.utils.DependencyInjector;
 
 
-public class CreateBookingCommand implements Command, Dependency {
+public class CreateBookingViewCommand implements Command, Dependency {
 
     public static final DependencyInjector di = DependencyInjector.getDefaultImplementation();
 
-    public static CreateBookingCommand createInstance() {
-        return new CreateBookingCommand(
+    public static CreateBookingViewCommand createInstance() {
+        return new CreateBookingViewCommand(
                 di.getDependency(DefaultBookingService.class)
         );
     }
 
     private final BookingService service;
 
-    public CreateBookingCommand(BookingService service) {
+    private CreateBookingViewCommand(BookingService service) {
         this.service = service;
     }
 

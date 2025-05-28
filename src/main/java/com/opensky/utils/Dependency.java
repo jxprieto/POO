@@ -15,4 +15,5 @@ public interface Dependency{
         // @StaticOverride should have supressWarnings for unused method
         throw new UnsupportedOperationException("Only supported in subclasses. All subclasses must override this method.");
     }
+
 }

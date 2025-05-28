@@ -29,7 +29,7 @@ public class DefaultClientService implements ClientService, Dependency {
     private final BookingRepository bookingRepository;
     private final Printer printer;
 
-    public DefaultClientService(ClientRepository repo, BookingRepository bookingRepository, Printer printer) {
+    private DefaultClientService(ClientRepository repo, BookingRepository bookingRepository, Printer printer) {
         this.repo = repo;
         this.bookingRepository = bookingRepository;
         this.printer = printer;

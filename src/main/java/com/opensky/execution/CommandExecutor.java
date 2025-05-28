@@ -18,7 +18,7 @@ public class CommandExecutor implements Dependency {
 
     private final ConsolePrinter printer;
 
-    public CommandExecutor(ConsolePrinter consolePrinter) {
+    private CommandExecutor(ConsolePrinter consolePrinter) {
         this.printer = consolePrinter;
     }
 

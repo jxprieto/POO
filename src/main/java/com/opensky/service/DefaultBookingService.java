@@ -31,7 +31,7 @@ public class DefaultBookingService implements BookingService, Dependency {
     private final BookingRepository bookingRepository;
     private final FlightRepository flightRepository;
 
-    public DefaultBookingService(final BookingRepository bookingRepository, final FlightRepository flightRepository) {
+    private DefaultBookingService(final BookingRepository bookingRepository, final FlightRepository flightRepository) {
         this.bookingRepository = bookingRepository;
         this.flightRepository = flightRepository;
     }
@@ -46,12 +46,13 @@ public class DefaultBookingService implements BookingService, Dependency {
         final List<Flight> bookingFlights = getBestConnection(flights, origin, arrival);
         if (bookingFlights.isEmpty())
             throw new NotAvailableFlightException(origin, arrival, numberOfSeats);
-        final Booking booking = new Booking(
-                null, // TODO: Client should be passed here, but we don't have a client in this context
-                bookingFlights,
-                LocalDateTime.now(),
-                Collections.nCopies(bookingFlights.size(), numberOfSeats)
-        );
+        var booking = Booking
+                .builder()
+                .client(null)
+                .flights(bookingFlights)
+                .bookingDate(LocalDateTime.now())
+                .numberOfSeatsPerFlight(Collections.nCopies(bookingFlights.size(), numberOfSeats))
+                .build();
         bookingRepository.create(booking);
     }
 

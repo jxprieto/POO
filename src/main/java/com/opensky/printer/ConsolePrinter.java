@@ -8,6 +8,8 @@ public class ConsolePrinter implements Printer, Dependency {
         return new ConsolePrinter();
     }
 
+    private ConsolePrinter() {}
+
     @Override
     public void print(String message) {
         System.out.println(message);

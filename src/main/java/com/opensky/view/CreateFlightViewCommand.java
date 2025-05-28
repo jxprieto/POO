@@ -9,20 +9,20 @@ import com.opensky.utils.DependencyInjector;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class CreateFlightCommand implements Command, Dependency {
+public class CreateFlightViewCommand implements Command, Dependency {
 
     public static final DependencyInjector di = DependencyInjector.getDefaultImplementation();
     private static final DateTimeFormatter formater = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    public static CreateFlightCommand createInstance() {
-        return new CreateFlightCommand(
+    public static CreateFlightViewCommand createInstance() {
+        return new CreateFlightViewCommand(
                 di.getDependency(DefaultFlightService.class)
         );
     }
 
     private final FlightService service;
 
-    public CreateFlightCommand(FlightService service) {
+    private CreateFlightViewCommand(FlightService service) {
         this.service = service;
     }
 

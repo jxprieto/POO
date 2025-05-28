@@ -6,19 +6,19 @@ import com.opensky.service.DefaultClientService;
 import com.opensky.utils.Dependency;
 import com.opensky.utils.DependencyInjector;
 
-public class CreateClientCommand implements Command, Dependency {
+public class CreateClientViewCommand implements Command, Dependency {
 
     private static final DependencyInjector di = DependencyInjector.getDefaultImplementation();
 
-    public static CreateClientCommand createInstance() {
-        return new CreateClientCommand(
+    public static CreateClientViewCommand createInstance() {
+        return new CreateClientViewCommand(
                 di.getDependency(DefaultClientService.class)
         );
     }
 
     private final ClientService service;
 
-    public CreateClientCommand(ClientService service) {
+    private CreateClientViewCommand(ClientService service) {
         this.service = service;
     }
 
@@ -35,7 +35,7 @@ public class CreateClientCommand implements Command, Dependency {
 
         if (age < 0) throw new FormatDataException("Age cannot be negative");
         if (name == null || name.isEmpty()) throw new FormatDataException("Name cannot be null or empty");
-        if (email == null || email.matches(EMAIL_REGEX)) throw new FormatDataException("Email cannot be null or empty");
+        if (email == null || !email.matches(EMAIL_REGEX)) throw new FormatDataException("Email should be a valid email address");
         if (phone == null || phone.isEmpty()) throw new FormatDataException("Phone cannot be null or empty");
 
         service.createClient(name, age, email, phone);

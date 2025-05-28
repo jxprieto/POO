@@ -8,12 +8,12 @@ import com.opensky.service.DefaultClientService;
 import com.opensky.utils.Dependency;
 import com.opensky.utils.DependencyInjector;
 
-public class ViewItineraryCommand implements Command, Dependency {
+public class ViewItineraryViewCommand implements Command, Dependency {
 
     private static final DependencyInjector di = DependencyInjector.getDefaultImplementation();
 
-    public static ViewItineraryCommand createInstance() {
-        return new ViewItineraryCommand(
+    public static ViewItineraryViewCommand createInstance() {
+        return new ViewItineraryViewCommand(
                 di.getDependency(DefaultClientService.class),
                 di.getDependency(ConsolePrinter.class)
         );
@@ -22,7 +22,7 @@ public class ViewItineraryCommand implements Command, Dependency {
     private final ClientService service;
     private final Printer printer;
 
-    public ViewItineraryCommand(ClientService service, Printer printer) {
+    private ViewItineraryViewCommand(ClientService service, Printer printer) {
         this.service = service;
         this.printer = printer;
     }

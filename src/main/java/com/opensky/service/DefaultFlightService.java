@@ -20,13 +20,21 @@ public class DefaultFlightService implements FlightService, Dependency {
 
     private final FlightRepository flightRepository;
 
-    public DefaultFlightService(FlightRepository flightRepository) {
+    private DefaultFlightService(FlightRepository flightRepository) {
         this.flightRepository = flightRepository;
     }
 
     @Override
     public void createFlight(String flightNumber, String origin, String destination, LocalDateTime departure, LocalDateTime arrival, Integer availableSeats) {
-        Flight flight = new Flight(flightNumber, origin, destination, departure, arrival, availableSeats);
+        var flight = Flight
+                .builder()
+                .flightNumber(flightNumber)
+                .origin(origin)
+                .destination(destination)
+                .departureTime(departure)
+                .arrivalTime(arrival)
+                .availableSeats(availableSeats)
+                .build();
         flightRepository.create(flight);
     }
 }
