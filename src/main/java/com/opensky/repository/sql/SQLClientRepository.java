@@ -1,25 +1,25 @@
 package com.opensky.repository.sql;
 
+import com.opensky.exception.EntityNotFoundException;
 import com.opensky.model.Client;
 import com.opensky.repository.ClientRepository;
 import com.opensky.utils.Dependency;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.opensky.repository.sql.utils.SQLConnectionManager.*;
+import static com.opensky.repository.sql.utils.SQLConnectionManager.withConnection;
 
 
-public class SQLClientConnectionManager implements ClientRepository, Dependency {
+public class SQLClientRepository implements ClientRepository, Dependency {
 
-    public static SQLClientConnectionManager createInstance() {
-        return new SQLClientConnectionManager();
+    public static SQLClientRepository createInstance() {
+        return new SQLClientRepository();
     }
 
     private static final String CREATE =
@@ -30,21 +30,24 @@ public class SQLClientConnectionManager implements ClientRepository, Dependency 
             "UPDATE clients SET name = ?, age = ?, email = ?, phone_number = ? " +
             "WHERE id = ?";
 
-    private static final String READ = "SELECT id, name, age, email, phone_number " +
+    private static final String READ =
+            "SELECT id, name, age, email, phone_number " +
             "FROM clients " +
             "WHERE id = ?";
 
-    private static final String DELETE = "DELETE FROM clients" +
+    private static final String DELETE =
+            "DELETE FROM clients " +
             " WHERE id = ?";
 
-    private static final String FIND_ALL = "SELECT id, name, age, email, phone_number " +
+    private static final String FIND_ALL =
+            "SELECT id, name, age, email, phone_number " +
             "FROM clients";
 
     private static final String FIND_BY_EMAIL = "SELECT id, name, age, email, phone_number " +
             "FROM clients " +
             "WHERE email = ?";
 
-    private SQLClientConnectionManager() {}
+    private SQLClientRepository() {}
 
     @Override
     public Client create(Client client) {
@@ -65,14 +68,15 @@ public class SQLClientConnectionManager implements ClientRepository, Dependency 
     @Override
     public Client update(Client client) {
         return withConnection(conn -> {
-            final PreparedStatement stmt = conn.prepareStatement(UPDATE);
-            stmt.setString(1, client.getName());
-            stmt.setObject(2, client.getAge(), Types.INTEGER);
-            stmt.setString(3, client.getEmail());
-            stmt.setString(4, client.getPhoneNumber());
-            stmt.setString(5, client.getId());
-            stmt.executeUpdate();
-            return client;
+            try(final PreparedStatement stmt = conn.prepareStatement(UPDATE)){
+                stmt.setString(1, client.getName());
+                stmt.setInt(2, client.getAge());
+                stmt.setString(3, client.getEmail());
+                stmt.setString(4, client.getPhoneNumber());
+                stmt.setString(5, client.getId());
+                stmt.executeUpdate();
+                return client;
+            }
         }, "Error updating client with ID: " + client.getId());
     }
 
@@ -107,7 +111,7 @@ public class SQLClientConnectionManager implements ClientRepository, Dependency 
             stmt.setString(1, id);
             final int affectedRows = stmt.executeUpdate();
 
-            if (affectedRows == 0) throw new SQLException("No client found with id: " + id);
+            if (affectedRows == 0) throw new EntityNotFoundException("No client found with id: " + id);
         }, "Error deleting client with ID: " + id);
     }
 

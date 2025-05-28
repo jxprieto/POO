@@ -1,6 +1,8 @@
 package com.opensky.view;
 
 import com.opensky.exception.FormatDataException;
+import com.opensky.printer.ConsolePrinter;
+import com.opensky.printer.Printer;
 import com.opensky.service.BookingService;
 import com.opensky.service.DefaultBookingService;
 import com.opensky.utils.Dependency;
@@ -13,14 +15,17 @@ public class CreateBookingViewCommand implements Command, Dependency {
 
     public static CreateBookingViewCommand createInstance() {
         return new CreateBookingViewCommand(
-                di.getDependency(DefaultBookingService.class)
+                di.getDependency(DefaultBookingService.class),
+                di.getDependency(ConsolePrinter.class)
         );
     }
 
     private final BookingService service;
+    private final Printer printer;
 
-    private CreateBookingViewCommand(BookingService service) {
+    private CreateBookingViewCommand(BookingService service, Printer printer) {
         this.service = service;
+        this.printer = printer;
     }
 
     @Override
@@ -32,7 +37,9 @@ public class CreateBookingViewCommand implements Command, Dependency {
         final String arrival = args[2].split(COLON)[1];
         final int numberOfSeats = Integer.parseInt(args[3].split(COLON)[1]);
 
-        service.createBooking(origin, arrival, numberOfSeats);
+        var booking = service.createBooking(origin, arrival, numberOfSeats);
+        printer.print("Booking created successfully with ID: " + booking.getId() + "\nBooking details:\n");
+        printer.print(booking + "\n");
     }
 
 }

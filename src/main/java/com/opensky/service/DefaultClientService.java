@@ -6,8 +6,8 @@ import com.opensky.printer.ConsolePrinter;
 import com.opensky.printer.Printer;
 import com.opensky.repository.BookingRepository;
 import com.opensky.repository.ClientRepository;
-import com.opensky.repository.sql.SQLBookingConnectionManager;
-import com.opensky.repository.sql.SQLClientConnectionManager;
+import com.opensky.repository.sql.SQLBookingRepository;
+import com.opensky.repository.sql.SQLClientRepository;
 import com.opensky.utils.Dependency;
 import com.opensky.utils.DependencyInjector;
 
@@ -19,8 +19,8 @@ public class DefaultClientService implements ClientService, Dependency {
 
     public static DefaultClientService createInstance() {
         return new DefaultClientService(
-                di.getDependency(SQLClientConnectionManager.class),
-                di.getDependency(SQLBookingConnectionManager.class),
+                di.getDependency(SQLClientRepository.class),
+                di.getDependency(SQLBookingRepository.class),
                 di.getDependency(ConsolePrinter.class)
         );
     }
@@ -36,10 +36,10 @@ public class DefaultClientService implements ClientService, Dependency {
     }
 
     @Override
-    public void createClient(String name, Integer age, String email, String phone) {
+    public Client createClient(String name, Integer age, String email, String phone) {
         repo.findByEmail(email)
                 .ifPresent(_ -> printer.print("Client with email " + email + " already exists."));
-        repo.create(Client
+        return repo.create(Client
                 .builder()
                 .name(name)
                 .age(age)

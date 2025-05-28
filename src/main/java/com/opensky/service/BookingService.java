@@ -1,9 +1,11 @@
 package com.opensky.service;
 
+import com.opensky.model.Booking;
+
 public interface BookingService {
-    void createBooking(String origin, String arrival, int numberOfSeats);
+    Booking createBooking(String origin, String arrival, int numberOfSeats);
 
     void cancelBooking(String bookingId);
 
-    void modifyBooking(String bookingId, String flightId, int numberOfSeats);
+    Booking modifyBooking(String bookingId, String flightId, int numberOfSeats);
 }

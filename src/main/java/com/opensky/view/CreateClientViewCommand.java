@@ -1,6 +1,8 @@
 package com.opensky.view;
 
 import com.opensky.exception.FormatDataException;
+import com.opensky.printer.ConsolePrinter;
+import com.opensky.printer.Printer;
 import com.opensky.service.ClientService;
 import com.opensky.service.DefaultClientService;
 import com.opensky.utils.Dependency;
@@ -12,14 +14,17 @@ public class CreateClientViewCommand implements Command, Dependency {
 
     public static CreateClientViewCommand createInstance() {
         return new CreateClientViewCommand(
-                di.getDependency(DefaultClientService.class)
+                di.getDependency(DefaultClientService.class),
+                di.getDependency(ConsolePrinter.class)
         );
     }
 
     private final ClientService service;
+    private final Printer printer;
 
-    private CreateClientViewCommand(ClientService service) {
+    private CreateClientViewCommand(ClientService service, Printer printer) {
         this.service = service;
+        this.printer = printer;
     }
 
     @Override
@@ -38,6 +43,9 @@ public class CreateClientViewCommand implements Command, Dependency {
         if (email == null || !email.matches(EMAIL_REGEX)) throw new FormatDataException("Email should be a valid email address");
         if (phone == null || phone.isEmpty()) throw new FormatDataException("Phone cannot be null or empty");
 
-        service.createClient(name, age, email, phone);
+        var client = service.createClient(name, age, email, phone);
+        printer.print("Client created successfully with ID: " + client.getId() + "\nClient details:\n");
+        printer.print(client + "\n");
+
     }
 }

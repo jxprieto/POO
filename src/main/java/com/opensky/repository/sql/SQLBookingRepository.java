@@ -17,21 +17,21 @@ import java.util.*;
 import static com.opensky.repository.sql.utils.SQLConnectionManager.*;
 
 
-public class SQLBookingConnectionManager implements BookingRepository, Dependency {
+public class SQLBookingRepository implements BookingRepository, Dependency {
 
     private final static DependencyInjector di = DependencyInjector.getDefaultImplementation();
 
     private final ClientRepository clientRepo;
     private final FlightRepository flightRepo;
 
-    public static SQLBookingConnectionManager createInstance() {
-        return new SQLBookingConnectionManager(
-                di.getDependency(SQLClientConnectionManager.class),
-                di.getDependency(SQLFlightConnectionManager.class)
+    public static SQLBookingRepository createInstance() {
+        return new SQLBookingRepository(
+                di.getDependency(SQLClientRepository.class),
+                di.getDependency(SQLFlightRepository.class)
         );
     }
 
-    private SQLBookingConnectionManager(ClientRepository clientRepo, FlightRepository flightRepo) {
+    private SQLBookingRepository(ClientRepository clientRepo, FlightRepository flightRepo) {
         this.clientRepo = clientRepo;
         this.flightRepo = flightRepo;
     }
@@ -42,20 +42,20 @@ public class SQLBookingConnectionManager implements BookingRepository, Dependenc
 
     private static final String UPDATE_BOOKING =
             "UPDATE bookings " +
-            "SET client_id = ?, booking_date = ?" +
-            " WHERE id = ?";
+            "SET client_id = ?, booking_date = ? " +
+            "WHERE id = ?";
     
     private static final String READ_BOOKING =
-            "SELECT id, client_id, booking_date" +
+            "SELECT id, client_id, booking_date " +
             "FROM bookings " +
             "WHERE id = ?";
 
     private static final String DELETE_BOOKING_BY_ID =
-            "DELETE FROM bookings" +
+            "DELETE FROM bookings " +
             " WHERE id = ?";
     
     private static final String FIND_ALL_BOOKINGS =
-            "SELECT id, client_id, booking_date" +
+            "SELECT id, client_id, booking_date " +
             "FROM bookings";
 
     private static final String DELETE_FROM_BOOKING_FLIGHTS_BY_BOOKING_ID =
@@ -67,7 +67,7 @@ public class SQLBookingConnectionManager implements BookingRepository, Dependenc
             "VALUES (?, ?, ?)";
 
     private static final String FIND_ALL_BOOKINGS_BY_CLIENT_ID =
-            "SELECT id, client_id, booking_date" +
+            "SELECT id, client_id, booking_date " +
             "FROM bookings " +
             "WHERE client_id = ?";
 
@@ -166,7 +166,7 @@ public class SQLBookingConnectionManager implements BookingRepository, Dependenc
 
     private Client getFullClient(String clientId, String bookingId) {
         return clientRepo.read(clientId).orElseThrow(
-                () -> new RuntimeException("Client not found for booking: " + bookingId + " with client ID: " + clientId)
+                () -> new EntityNotFoundException("Client not found for booking: " + bookingId + " with client ID: " + clientId)
         );
     }
 

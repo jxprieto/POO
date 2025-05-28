@@ -10,10 +10,10 @@ import java.util.*;
 
 import static com.opensky.repository.sql.utils.SQLConnectionManager.withConnection;
 
-public class SQLFlightConnectionManager implements FlightRepository, Dependency  {
+public class SQLFlightRepository implements FlightRepository, Dependency  {
 
-    public static SQLFlightConnectionManager createInstance() {
-        return new SQLFlightConnectionManager();
+    public static SQLFlightRepository createInstance() {
+        return new SQLFlightRepository();
     }
 
     private static final String CREATE_FLIGHT =
@@ -43,7 +43,7 @@ public class SQLFlightConnectionManager implements FlightRepository, Dependency 
             "FROM flights f JOIN booking_flights bf " +
             "ON f.id = bf.flight_id and bf.booking_id = ?";
 
-    private SQLFlightConnectionManager() {}
+    private SQLFlightRepository() {}
 
     @Override
     public Flight create(Flight flight) {

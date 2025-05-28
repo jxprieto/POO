@@ -2,7 +2,7 @@ package com.opensky.service;
 
 import com.opensky.model.Flight;
 import com.opensky.repository.FlightRepository;
-import com.opensky.repository.sql.SQLFlightConnectionManager;
+import com.opensky.repository.sql.SQLFlightRepository;
 import com.opensky.utils.Dependency;
 import com.opensky.utils.DependencyInjector;
 
@@ -14,7 +14,7 @@ public class DefaultFlightService implements FlightService, Dependency {
 
     public static DefaultFlightService createInstance() {
         return new DefaultFlightService(
-                di.getDependency(SQLFlightConnectionManager.class)
+                di.getDependency(SQLFlightRepository.class)
         );
     }
 
@@ -25,7 +25,7 @@ public class DefaultFlightService implements FlightService, Dependency {
     }
 
     @Override
-    public void createFlight(String flightNumber, String origin, String destination, LocalDateTime departure, LocalDateTime arrival, Integer availableSeats) {
+    public Flight createFlight(String flightNumber, String origin, String destination, LocalDateTime departure, LocalDateTime arrival, Integer availableSeats) {
         var flight = Flight
                 .builder()
                 .flightNumber(flightNumber)
@@ -35,6 +35,6 @@ public class DefaultFlightService implements FlightService, Dependency {
                 .arrivalTime(arrival)
                 .availableSeats(availableSeats)
                 .build();
-        flightRepository.create(flight);
+        return flightRepository.create(flight);
     }
 }

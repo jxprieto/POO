@@ -6,8 +6,8 @@ import com.opensky.model.Booking;
 import com.opensky.model.Flight;
 import com.opensky.repository.BookingRepository;
 import com.opensky.repository.FlightRepository;
-import com.opensky.repository.sql.SQLBookingConnectionManager;
-import com.opensky.repository.sql.SQLFlightConnectionManager;
+import com.opensky.repository.sql.SQLBookingRepository;
+import com.opensky.repository.sql.SQLFlightRepository;
 import com.opensky.utils.Dependency;
 import com.opensky.utils.DependencyInjector;
 
@@ -23,8 +23,8 @@ public class DefaultBookingService implements BookingService, Dependency {
 
     public static DefaultBookingService createInstance() {
         return new DefaultBookingService(
-                di.getDependency(SQLBookingConnectionManager.class),
-                di.getDependency(SQLFlightConnectionManager.class)
+                di.getDependency(SQLBookingRepository.class),
+                di.getDependency(SQLFlightRepository.class)
         );
     }
 
@@ -37,7 +37,7 @@ public class DefaultBookingService implements BookingService, Dependency {
     }
 
     @Override
-    public void createBooking(String origin, String arrival, int numberOfSeats) {
+    public Booking createBooking(String origin, String arrival, int numberOfSeats) {
         final List<Flight> flights = flightRepository
                 .findAll()
                 .stream()
@@ -54,6 +54,7 @@ public class DefaultBookingService implements BookingService, Dependency {
                 .numberOfSeatsPerFlight(Collections.nCopies(bookingFlights.size(), numberOfSeats))
                 .build();
         bookingRepository.create(booking);
+        return booking;
     }
 
     private List<Flight> getBestConnection(List<Flight> flights, String origin, String arrival) {
@@ -107,27 +108,24 @@ public class DefaultBookingService implements BookingService, Dependency {
     }
 
     @Override
-    public void modifyBooking(String bookingId, String flightId, int numberOfSeats) {
+    public Booking modifyBooking(String bookingId, String flightId, int numberOfSeats) {
         var booking = bookingRepository.read(bookingId)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found for id: " + bookingId));
         var flight = flightRepository.read(flightId)
                 .orElseThrow(() -> new EntityNotFoundException("Flight not found for id: " + flightId));
 
-        var bookingFlights = booking.getFlights();
-        var index = bookingFlights.indexOf(flight);
-        if (index >= 0) {
-            int previousSeats = booking.getNumberOfSeatsPerFlight().get(index);
-            if (numberOfSeats > previousSeats && flight.getAvailableSeats() < numberOfSeats - previousSeats)
-                throw new NotAvailableFlightException(flightId, numberOfSeats);
-            var newNumSeats = new ArrayList<>(booking.getNumberOfSeatsPerFlight());
-            newNumSeats.set(index, numberOfSeats);
-            var toUpdate = booking
-                    .toBuilder()
-                    .numberOfSeatsPerFlight(Collections.unmodifiableList(newNumSeats))
-                    .build();
-            bookingRepository.update(toUpdate);
-        } else {
-            throw new EntityNotFoundException("Flight not part of the booking: " + flightId);
-        }
+        var newFlights = new ArrayList<>(booking.getFlights());
+        var newNumberOfSeats = new ArrayList<>(booking.getNumberOfSeatsPerFlight());
+
+        newNumberOfSeats.add(numberOfSeats);
+        newFlights.add(flight);
+
+        var toUpdate = booking
+                .toBuilder()
+                .flights(newFlights)
+                .numberOfSeatsPerFlight(newNumberOfSeats)
+                .build();
+        return bookingRepository.update(toUpdate);
+
     }
 }

@@ -35,7 +35,6 @@ public class OpenSkyCli {
         while (!(input = getOption()).equals(EXIT_OPTION)){
             executor.executeCommand(getCommand(input), input);
             waitAndCatchException();
-            printer.print("");
         }
         printer.print("Exiting the application...\n");
     }
