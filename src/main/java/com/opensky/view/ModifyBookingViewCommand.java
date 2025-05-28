@@ -33,9 +33,9 @@ public class ModifyBookingViewCommand implements Command, Dependency {
         if (args.length != 4)
             throw new FormatDataException("Invalid input for " + MODIFY_BOOKING_COMMAND + " expected is: " + MODIFY_BOOKING);
 
-        final String bookingId = args[1].split(COLON)[1];
-        final String flightId = args[2].split(COLON)[1];
-        final String numberOfSeats = args[3].split(COLON)[1];
+        final String bookingId = getArgValue(args[1]);
+        final String flightId = getArgValue(args[2]);
+        final String numberOfSeats = getArgValue(args[3]);
 
         var booking = service.modifyBooking(bookingId, flightId, Integer.parseInt(numberOfSeats));
         printer.print("Booking updated successfully with ID: " + booking.getId() + "\nBooking details:\n");

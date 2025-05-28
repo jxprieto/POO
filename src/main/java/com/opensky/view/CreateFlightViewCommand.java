@@ -37,12 +37,12 @@ public class CreateFlightViewCommand implements Command, Dependency {
         if (args.length != 7)
             throw new FormatDataException("Invalid input for " + CREATE_FLIGHT_COMMAND + " expected is: " + CREATE_FLIGHT);
 
-        final String flightNumber = args[1].split(COLON)[1];
-        final String origin = args[2].split(COLON)[1];
-        final String destination = args[3].split(COLON)[1];
-        final LocalDateTime departure = LocalDateTime.parse(args[4].split(COLON)[1], formater);
-        final LocalDateTime arrival = LocalDateTime.parse(args[5].split(COLON)[1], formater);
-        final int availableSeats = Integer.parseInt(args[6].split(COLON)[1]);
+        final String flightNumber = getArgValue(args[1]);
+        final String origin = getArgValue(args[2]);
+        final String destination = getArgValue(args[3]);
+        final LocalDateTime departure = LocalDateTime.parse(getArgValue(args[4]), formater);
+        final LocalDateTime arrival = LocalDateTime.parse(getArgValue(args[5]), formater);
+        final int availableSeats = Integer.parseInt(getArgValue(args[6]));
 
         if (availableSeats < 0) throw new FormatDataException("Available seats cannot be negative");
         if (!departure.isAfter(LocalDateTime.now()) || !arrival.isAfter(LocalDateTime.now()))

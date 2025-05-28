@@ -1,6 +1,7 @@
 package com.opensky.model;
 
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
 
@@ -12,4 +13,9 @@ public class Client extends Entity<String> {
     Integer age;
     String email;
     String phoneNumber;
+
+    @ToString.Include(name = "id", rank = 1)
+    public String getId() {
+        return id;
+    }
 }

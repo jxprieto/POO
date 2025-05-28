@@ -1,6 +1,7 @@
 package com.opensky.model;
 
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
 
@@ -16,4 +17,9 @@ public class Flight extends Entity<String> {
     LocalDateTime departureTime;
     LocalDateTime arrivalTime;
     Integer availableSeats;
+
+    @ToString.Include(name = "id", rank = 1)
+    public String getId() {
+        return id;
+    }
 }

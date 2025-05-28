@@ -39,9 +39,9 @@ public class DefaultClientService implements ClientService, Dependency {
     @Override
     public Client createClient(String name, Integer age, String email, String phone) {
         repo.findByEmail(email)
-                .ifPresent(_ -> { throw new DuplicatedFieldException("email " , email); });
+                .ifPresent(_ -> { throw new DuplicatedFieldException("email" , email); });
         repo.findByNumber(phone)
-                .ifPresent(_ -> { throw new DuplicatedFieldException("phone number " , phone); });
+                .ifPresent(_ -> { throw new DuplicatedFieldException("phone number" , phone); });
         return repo.create(Client
                 .builder()
                 .name(name)

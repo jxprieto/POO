@@ -33,9 +33,9 @@ public class CreateBookingViewCommand implements Command, Dependency {
         String[] args = command.split(ARGUMENT_SPLIT_REGEX);
         if (args.length != 4)
             throw new FormatDataException("Invalid input for " + CREATE_BOOKING_COMMAND + " expected is: " + CREATE_BOOKING);
-        final String origin = args[1].split(COLON)[1];
-        final String arrival = args[2].split(COLON)[1];
-        final int numberOfSeats = Integer.parseInt(args[3].split(COLON)[1]);
+        final String origin = getArgValue(args[1]);
+        final String arrival = getArgValue(args[2]);
+        final int numberOfSeats = Integer.parseInt(getArgValue(args[3]));
 
         var booking = service.createBooking(origin, arrival, numberOfSeats);
         printer.print("Booking created successfully with ID: " + booking.getId() + "\nBooking details:\n");

@@ -30,9 +30,9 @@ public class CancelBookingViewCommand implements Command, Dependency {
     @Override
     public void execute(String command) {
         String[] args = command.split(ARGUMENT_SPLIT_REGEX);
-        if (args.length != 4)
+        if (args.length != 2)
             throw new FormatDataException("Invalid input for " + CANCEL_BOOKING_COMMAND + " expected is: " + CANCEL_BOOKING);
-        final String bookingId = args[1].split(COLON)[1];
+        final String bookingId = getArgValue(args[1]);
         service.cancelBooking(bookingId);
         printer.print("Booking with ID " + bookingId + " has been successfully cancelled.\n");
     }

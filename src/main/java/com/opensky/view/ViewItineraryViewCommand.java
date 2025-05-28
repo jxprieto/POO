@@ -32,7 +32,7 @@ public class ViewItineraryViewCommand implements Command, Dependency {
         final String[] args = command.split(ARGUMENT_SPLIT_REGEX);
         if (args.length != 2)
             throw new FormatDataException("Invalid input, expected for " + VIEW_ITINERARY_COMMAND + "is: " + VIEW_ITINERARY);
-        final String id = args[1].split(COLON)[1];
+        final String id = getArgValue(args[1]);
         if (id == null || id.isEmpty()) throw new FormatDataException("ID cannot be null or empty");
         var bookings = service.getAllClientBookings(id);
         if (bookings.isEmpty())
@@ -40,6 +40,7 @@ public class ViewItineraryViewCommand implements Command, Dependency {
         else {
             printer.print("Client with id " + id + " has the following bookings:");
             bookings.forEach(booking -> printer.print(booking.toString()));
+            printer.print("\n");
         }
     }
 }

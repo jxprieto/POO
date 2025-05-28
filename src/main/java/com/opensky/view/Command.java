@@ -42,12 +42,18 @@ public interface Command {
             -> %s (exit)
         """,
             CREATE_CLIENT_COMMAND, CREATE_CLIENT,
-            CREATE_FLIGHT_COMMAND, CREATE_BOOKING_COMMAND,
+            CREATE_FLIGHT_COMMAND, CREATE_FLIGHT,
             CREATE_BOOKING_COMMAND, CREATE_BOOKING,
             VIEW_ITINERARY_COMMAND, VIEW_ITINERARY,
             CANCEL_BOOKING_COMMAND, CANCEL_BOOKING,
             MODIFY_BOOKING_COMMAND, MODIFY_BOOKING,
             SHOW_ALL_CLIENTS_COMMAND,
             EXIT_OPTION);
+
+    default String getArgValue(String arg) {
+        return arg.split(COLON)[1];
+    }
+
     void execute(String command);
+
 }

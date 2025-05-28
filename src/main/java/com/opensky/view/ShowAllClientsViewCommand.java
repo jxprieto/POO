@@ -34,8 +34,9 @@ public class ShowAllClientsViewCommand implements Command, Dependency {
         if (clients.isEmpty())
             printer.print("No clients found.\n");
         else{
-            printer.print("Client details:\n");
+            printer.print("Client details:");
             clients.forEach(c -> printer.print(c.toString()));
+            printer.print("\n");
         }
     }
 }

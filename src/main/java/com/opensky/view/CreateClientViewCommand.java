@@ -33,10 +33,10 @@ public class CreateClientViewCommand implements Command, Dependency {
         if (args.length != 5)
             throw new FormatDataException("Invalid input for " + CREATE_CLIENT_COMMAND + " expected is: " + CREATE_CLIENT);
 
-        String name = args[1].split(COLON)[1];
-        int age = Integer.parseInt(args[2].split(COLON)[1]);
-        String email = args[3].split(COLON)[1];
-        String phone = args[4].split(COLON)[1];
+        String name = getArgValue(args[1]);
+        int age = Integer.parseInt(getArgValue(args[2]));
+        String email = getArgValue(args[3]);
+        String phone = getArgValue(args[4]);
 
         if (age < 0) throw new FormatDataException("Age cannot be negative");
         if (name == null || name.isEmpty()) throw new FormatDataException("Name cannot be null or empty");
@@ -46,6 +46,5 @@ public class CreateClientViewCommand implements Command, Dependency {
         var client = service.createClient(name, age, email, phone);
         printer.print("Client created successfully with ID: " + client.getId() + "\nClient details:\n");
         printer.print(client + "\n");
-
     }
 }
