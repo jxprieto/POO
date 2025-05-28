@@ -35,7 +35,11 @@ public class ViewItineraryViewCommand implements Command, Dependency {
         final String id = args[1].split(COLON)[1];
         if (id == null || id.isEmpty()) throw new FormatDataException("ID cannot be null or empty");
         var bookings = service.getAllClientBookings(id);
-        printer.print("Client with id " + id + " has the following bookings:");
-        bookings.forEach(booking -> printer.print(booking.toString()));
+        if (bookings.isEmpty())
+            printer.print("No bookings found for client with id " + id + ".\n");
+        else {
+            printer.print("Client with id " + id + " has the following bookings:");
+            bookings.forEach(booking -> printer.print(booking.toString()));
+        }
     }
 }

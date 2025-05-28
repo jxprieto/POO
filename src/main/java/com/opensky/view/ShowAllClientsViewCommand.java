@@ -31,8 +31,11 @@ public class ShowAllClientsViewCommand implements Command, Dependency {
             throw new FormatDataException("Invalid input for " + SHOW_ALL_CLIENTS_COMMAND + ", it shouldn't have any argument" );
 
         var clients = service.getAllClients();
-        printer.print("Client details:\n");
-        clients.forEach(c -> printer.print(c.toString()));
-
+        if (clients.isEmpty())
+            printer.print("No clients found.\n");
+        else{
+            printer.print("Client details:\n");
+            clients.forEach(c -> printer.print(c.toString()));
+        }
     }
 }
