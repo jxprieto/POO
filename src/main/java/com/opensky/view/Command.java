@@ -26,6 +26,8 @@ public interface Command {
     String MODIFY_BOOKING = "reservationId:<id reserva>;newFlightId:<id nuevo vuelo>;newSeats:<número de asientos>";
     String MODIFY_BOOKING_COMMAND = "modifyReservation";
 
+    String SHOW_ALL_CLIENTS_COMMAND = "showAllClients";
+
     String EXIT_OPTION = "exit";
 
     String MENU = String.format("""
@@ -36,6 +38,7 @@ public interface Command {
             -> %s %s
             -> %s %s
             -> %s %s
+            -> %s (show all clients)
             -> %s (exit)
         """,
             CREATE_CLIENT_COMMAND, CREATE_CLIENT,
@@ -44,6 +47,7 @@ public interface Command {
             VIEW_ITINERARY_COMMAND, VIEW_ITINERARY,
             CANCEL_BOOKING_COMMAND, CANCEL_BOOKING,
             MODIFY_BOOKING_COMMAND, MODIFY_BOOKING,
+            SHOW_ALL_CLIENTS_COMMAND,
             EXIT_OPTION);
     void execute(String command);
 }

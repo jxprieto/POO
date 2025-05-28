@@ -26,7 +26,8 @@ public class OpenSkyCli {
             CREATE_BOOKING_COMMAND, di.getDependency(CreateBookingViewCommand.class),
             VIEW_ITINERARY_COMMAND, di.getDependency(ViewItineraryViewCommand.class),
             CANCEL_BOOKING_COMMAND, di.getDependency(CancelBookingViewCommand.class),
-            MODIFY_BOOKING_COMMAND, di.getDependency(ModifyBookingViewCommand.class)
+            MODIFY_BOOKING_COMMAND, di.getDependency(ModifyBookingViewCommand.class),
+            SHOW_ALL_CLIENTS_COMMAND, di.getDependency(ShowAllClientsViewCommand.class)
     );
 
 
