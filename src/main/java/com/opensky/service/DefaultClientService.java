@@ -1,5 +1,6 @@
 package com.opensky.service;
 
+import com.opensky.exception.DuplicatedFieldException;
 import com.opensky.model.Booking;
 import com.opensky.model.Client;
 import com.opensky.printer.ConsolePrinter;
@@ -38,7 +39,9 @@ public class DefaultClientService implements ClientService, Dependency {
     @Override
     public Client createClient(String name, Integer age, String email, String phone) {
         repo.findByEmail(email)
-                .ifPresent(_ -> printer.print("Client with email " + email + " already exists."));
+                .ifPresent(_ -> { throw new DuplicatedFieldException("email " , email); });
+        repo.findByNumber(phone)
+                .ifPresent(_ -> { throw new DuplicatedFieldException("phone number " , phone); });
         return repo.create(Client
                 .builder()
                 .name(name)
@@ -51,6 +54,11 @@ public class DefaultClientService implements ClientService, Dependency {
     @Override
     public List<Booking> getAllClientBookings(String id) {
         return bookingRepository.findBokingsByClientId(id);
+    }
+
+    @Override
+    public List<Client> getAllClients() {
+        return repo.findAll();
     }
 
 }

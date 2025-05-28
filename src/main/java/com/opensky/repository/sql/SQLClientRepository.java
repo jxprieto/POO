@@ -5,9 +5,7 @@ import com.opensky.model.Client;
 import com.opensky.repository.ClientRepository;
 import com.opensky.utils.Dependency;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,28 +22,32 @@ public class SQLClientRepository implements ClientRepository, Dependency {
 
     private static final String CREATE =
             "INSERT INTO clients (id, name, age, email, phone_number) " +
-            "VALUES (?, ?, ?, ?, ?)";
+                    "VALUES (?, ?, ?, ?, ?)";
 
     private static final String UPDATE =
             "UPDATE clients SET name = ?, age = ?, email = ?, phone_number = ? " +
-            "WHERE id = ?";
+                    "WHERE id = ?";
 
     private static final String READ =
             "SELECT id, name, age, email, phone_number " +
-            "FROM clients " +
-            "WHERE id = ?";
+                    "FROM clients " +
+                    "WHERE id = ?";
 
     private static final String DELETE =
             "DELETE FROM clients " +
-            " WHERE id = ?";
+                    " WHERE id = ?";
 
     private static final String FIND_ALL =
             "SELECT id, name, age, email, phone_number " +
-            "FROM clients";
+                    "FROM clients";
 
     private static final String FIND_BY_EMAIL = "SELECT id, name, age, email, phone_number " +
             "FROM clients " +
             "WHERE email = ?";
+
+    private static final String FIND_BY_NUMBER = "SELECT id, name, age, email, phone_number " +
+            "FROM clients " +
+            "WHERE phone_number = ?";
 
     private SQLClientRepository() {}
 
@@ -89,13 +91,13 @@ public class SQLClientRepository implements ClientRepository, Dependency {
                 if (rs.next()) {
                     return Optional.of(
                             Client
-                                .builder()
-                                .id(rs.getString("id"))
-                                .name(rs.getString("name"))
-                                .age(rs.getInt("age"))
-                                .email(rs.getString("email"))
-                                .phoneNumber(rs.getString("phone_number"))
-                                .build());
+                                    .builder()
+                                    .id(rs.getString("id"))
+                                    .name(rs.getString("name"))
+                                    .age(rs.getInt("age"))
+                                    .email(rs.getString("email"))
+                                    .phoneNumber(rs.getString("phone_number"))
+                                    .build());
                 }
                 return Optional.empty();
             }
@@ -139,21 +141,32 @@ public class SQLClientRepository implements ClientRepository, Dependency {
     @Override
     public Optional<Client> findByEmail(String email) {
         return withConnection(conn -> {
-            final PreparedStatement stmt = conn.prepareStatement(FIND_BY_EMAIL);
-            stmt.setString(1, email);
-            try (final ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    Client client = Client.builder()
-                            .id(rs.getString("id"))
-                            .name(rs.getString("name"))
-                            .age(rs.getInt("age"))
-                            .email(rs.getString("email"))
-                            .phoneNumber(rs.getString("phone_number"))
-                            .build();
-                    return Optional.of(client);
-                }
-                return Optional.empty();
-            }
+            return getClientByField(conn, FIND_BY_EMAIL, email);
         }, "Error finding client by email: " + email);
+    }
+
+    @Override
+    public Optional<Client> findByNumber(String phone) {
+        return withConnection(conn -> {
+            return getClientByField(conn, FIND_BY_NUMBER, phone);
+        }, "Error finding client by phone: " + phone);
+    }
+
+    private static Optional<Client> getClientByField(Connection conn, String findByEmail, String email) throws SQLException {
+        try (final PreparedStatement stmt = conn.prepareStatement(findByEmail)) {
+            stmt.setString(1, email);
+            final ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Client client = Client.builder()
+                        .id(rs.getString("id"))
+                        .name(rs.getString("name"))
+                        .age(rs.getInt("age"))
+                        .email(rs.getString("email"))
+                        .phoneNumber(rs.getString("phone_number"))
+                        .build();
+                return Optional.of(client);
+            }
+            return Optional.empty();
+        }
     }
 }

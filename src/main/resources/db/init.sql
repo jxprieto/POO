@@ -2,8 +2,8 @@ CREATE TABLE clients (
                          id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
                          name VARCHAR(100) NOT NULL,
                          age INT,
-                         email VARCHAR(100),
-                         phone_number VARCHAR(20)
+                         email VARCHAR(100) UNIQUE,
+                         phone_number VARCHAR(20) UNIQUE
 );
 
 CREATE TABLE flights (
