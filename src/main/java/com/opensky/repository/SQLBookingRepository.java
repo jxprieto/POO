@@ -65,6 +65,11 @@ public class SQLBookingRepository extends SQLRepository implements BookingReposi
             "FROM bookings " +
             "WHERE client_id = ?";
 
+    private static final String UPDATE_FLIGHT_ADD_NUM_OF_SEATS =
+            "UPDATE booking_flights " +
+            "SET num_of_seats = (num_of_seats + ?) " +
+            "WHERE booking_id = ? and flight_id = ?";
+
 
     @Override
     public Booking create(Booking booking) {
@@ -91,7 +96,7 @@ public class SQLBookingRepository extends SQLRepository implements BookingReposi
                 if (updated == 0) throw new EntityNotFoundException("Booking not found for update: " + booking.getId());
             }
             deleteFlightsForBooking(booking, conn);
-            addFLightsToBooking(booking, conn);
+            addFlightsToBooking(booking, conn);
             return booking;
         }, "Error updating booking with ID: " + booking.getId());
     }
@@ -110,11 +115,15 @@ public class SQLBookingRepository extends SQLRepository implements BookingReposi
 
     @Override
     public void deleteById(String id) {
-        withConnection(conn ->{
+        Booking booking = read(id)
+                .orElseThrow(() -> new EntityNotFoundException("Booking not found for deletion: " + id));
+        withConnectionTransactional(conn ->{
             try (final PreparedStatement stmt = conn.prepareStatement(DELETE_BOOKING_BY_ID)) {
                 stmt.setString(1, id);
                 stmt.executeUpdate();
             }
+            deleteFlightsForBooking(booking, conn);
+            conn.commit();
         }, "Error deleting booking with ID: " + id);
     }
 
@@ -185,9 +194,21 @@ public class SQLBookingRepository extends SQLRepository implements BookingReposi
             deleteStmt.setString(1, booking.getId());
             deleteStmt.executeUpdate();
         }
+        try (final PreparedStatement updateAvailableSeats = conn.prepareStatement(UPDATE_FLIGHT_ADD_NUM_OF_SEATS)) {
+            for (int i = 0; i < booking.getFlights().size(); ++i) {
+                updateAvailableSeats.setInt(1, booking.getNumberOfSeatsPerFlight().get(i));
+                updateAvailableSeats.setString(2, booking.getId());
+                updateAvailableSeats.setString(3, booking.getFlights().get(i).getId());
+                updateAvailableSeats.addBatch();
+            }
+            updateAvailableSeats.executeBatch();
+        }catch (SQLException e) {
+            throw new RuntimeException("Error updating available seats for flights in booking: " + booking.getId(), e);
+        }
     }
 
-    private static void addFLightsToBooking(Booking booking, Connection conn) throws SQLException {
+    private static void addFlightsToBooking(Booking booking, Connection conn) throws SQLException {
+        conn.setAutoCommit(false);
         try (final PreparedStatement insertStmt = conn.prepareStatement(INSERT_FLIGHTS_IN_BOOKING)) {
             for (int i = 0 ; i < booking.getFlights().size(); ++i) {
                 insertStmt.setString(1, booking.getId());
@@ -197,5 +218,16 @@ public class SQLBookingRepository extends SQLRepository implements BookingReposi
             }
             insertStmt.executeBatch();
         }
+        try (final PreparedStatement insertStmt = conn.prepareStatement(UPDATE_FLIGHT_ADD_NUM_OF_SEATS)) {
+            for (int i = 0 ; i < booking.getFlights().size(); ++i) {
+                insertStmt.setInt(1, - booking.getNumberOfSeatsPerFlight().get(i));
+                insertStmt.setString(2, booking.getId());
+                insertStmt.setString(3, booking.getFlights().get(i).getId());
+                insertStmt.addBatch();
+            }
+            insertStmt.executeBatch();
+        }
+        conn.commit();
+        conn.setAutoCommit(true);
     }
 }

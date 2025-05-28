@@ -24,6 +24,19 @@ public class SQLRepository {
         }
     }
 
+    static void withConnectionTransactional(VoidSQLFunction action, String errorMessage) {
+        Connection conn = null;
+        try {
+            conn = Database.getConnection();
+            conn.setAutoCommit(false);
+            action.apply(conn);
+        } catch (SQLException e) {
+            throw new RuntimeException(errorMessage, e);
+        } finally {
+            if (conn != null) Database.releaseConnection(conn);
+        }
+    }
+
     @FunctionalInterface
     public interface VoidSQLFunction {
         void apply(Connection conn) throws SQLException;
