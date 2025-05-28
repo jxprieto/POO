@@ -1,6 +1,7 @@
-package com.opensky.repository;
+package com.opensky.repository.sql;
 
 import com.opensky.model.Client;
+import com.opensky.repository.ClientRepository;
 import com.opensky.utils.Dependency;
 
 import java.sql.PreparedStatement;
@@ -12,10 +13,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class SQLClientRepository extends SQLRepository implements ClientRepository, Dependency {
+import static com.opensky.repository.sql.utils.SQLConnectionManager.*;
 
-    public static SQLClientRepository createInstance() {
-        return new SQLClientRepository();
+
+public class SQLClientConnectionManager implements ClientRepository, Dependency {
+
+    public static SQLClientConnectionManager createInstance() {
+        return new SQLClientConnectionManager();
     }
 
     private static final String CREATE =

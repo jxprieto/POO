@@ -6,8 +6,8 @@ import com.opensky.model.Booking;
 import com.opensky.model.Flight;
 import com.opensky.repository.BookingRepository;
 import com.opensky.repository.FlightRepository;
-import com.opensky.repository.SQLBookingRepository;
-import com.opensky.repository.SQLFlightRepository;
+import com.opensky.repository.sql.SQLBookingConnectionManager;
+import com.opensky.repository.sql.SQLFlightConnectionManager;
 import com.opensky.utils.Dependency;
 import com.opensky.utils.DependencyInjector;
 
@@ -30,8 +30,8 @@ public class DefaultBookingService implements BookingService, Dependency {
 
 
     public DefaultBookingService() {
-        this.bookingRepository = di.getDependency(SQLBookingRepository.class);
-        this.flightRepository = di.getDependency(SQLFlightRepository.class);
+        this.bookingRepository = di.getDependency(SQLBookingConnectionManager.class);
+        this.flightRepository = di.getDependency(SQLFlightConnectionManager.class);
     }
 
     @Override

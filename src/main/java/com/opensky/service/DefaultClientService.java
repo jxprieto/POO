@@ -6,8 +6,8 @@ import com.opensky.printer.ConsolePrinter;
 import com.opensky.printer.Printer;
 import com.opensky.repository.BookingRepository;
 import com.opensky.repository.ClientRepository;
-import com.opensky.repository.SQLBookingRepository;
-import com.opensky.repository.SQLClientRepository;
+import com.opensky.repository.sql.SQLBookingConnectionManager;
+import com.opensky.repository.sql.SQLClientConnectionManager;
 import com.opensky.utils.Dependency;
 import com.opensky.utils.DependencyInjector;
 
@@ -29,8 +29,8 @@ public class DefaultClientService implements ClientService, Dependency {
 
     public static DefaultClientService createInstance() {
         return new DefaultClientService(
-                di.getDependency(SQLClientRepository.class),
-                di.getDependency(SQLBookingRepository.class),
+                di.getDependency(SQLClientConnectionManager.class),
+                di.getDependency(SQLBookingConnectionManager.class),
                 di.getDependency(ConsolePrinter.class)
         );
     }

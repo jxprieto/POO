@@ -1,16 +1,19 @@
-package com.opensky.repository;
+package com.opensky.repository.sql;
 
 import com.opensky.Database;
 import com.opensky.model.Flight;
+import com.opensky.repository.FlightRepository;
 import com.opensky.utils.Dependency;
 
 import java.sql.*;
 import java.util.*;
 
-public class SQLFlightRepository extends SQLRepository implements FlightRepository, Dependency  {
+import static com.opensky.repository.sql.utils.SQLConnectionManager.withConnection;
 
-    public static SQLFlightRepository createInstance() {
-        return new SQLFlightRepository();
+public class SQLFlightConnectionManager implements FlightRepository, Dependency  {
+
+    public static SQLFlightConnectionManager createInstance() {
+        return new SQLFlightConnectionManager();
     }
 
     private static final String CREATE_FLIGHT =

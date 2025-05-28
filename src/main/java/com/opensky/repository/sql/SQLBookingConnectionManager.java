@@ -1,9 +1,12 @@
-package com.opensky.repository;
+package com.opensky.repository.sql;
 
 import com.opensky.exception.EntityNotFoundException;
 import com.opensky.model.Booking;
 import com.opensky.model.Client;
 import com.opensky.model.Flight;
+import com.opensky.repository.BookingRepository;
+import com.opensky.repository.ClientRepository;
+import com.opensky.repository.FlightRepository;
 import com.opensky.utils.Dependency;
 import com.opensky.utils.DependencyInjector;
 
@@ -11,21 +14,24 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class SQLBookingRepository extends SQLRepository implements BookingRepository, Dependency {
+import static com.opensky.repository.sql.utils.SQLConnectionManager.*;
+
+
+public class SQLBookingConnectionManager implements BookingRepository, Dependency {
 
     private final static DependencyInjector di = DependencyInjector.getDefaultImplementation();
 
     private final ClientRepository clientRepo;
     private final FlightRepository flightRepo;
 
-    public static SQLBookingRepository createInstance() {
-        return new SQLBookingRepository(
-                di.getDependency(SQLClientRepository.class),
-                di.getDependency(SQLFlightRepository.class)
+    public static SQLBookingConnectionManager createInstance() {
+        return new SQLBookingConnectionManager(
+                di.getDependency(SQLClientConnectionManager.class),
+                di.getDependency(SQLFlightConnectionManager.class)
         );
     }
 
-    private SQLBookingRepository(ClientRepository clientRepo, FlightRepository flightRepo) {
+    private SQLBookingConnectionManager(ClientRepository clientRepo, FlightRepository flightRepo) {
         this.clientRepo = clientRepo;
         this.flightRepo = flightRepo;
     }

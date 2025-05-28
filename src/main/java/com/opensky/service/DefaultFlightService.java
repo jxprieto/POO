@@ -2,7 +2,7 @@ package com.opensky.service;
 
 import com.opensky.model.Flight;
 import com.opensky.repository.FlightRepository;
-import com.opensky.repository.SQLFlightRepository;
+import com.opensky.repository.sql.SQLFlightConnectionManager;
 import com.opensky.utils.Dependency;
 import com.opensky.utils.DependencyInjector;
 
@@ -13,7 +13,7 @@ public class DefaultFlightService implements FlightService, Dependency {
     private static final DependencyInjector di = DependencyInjector.getDefaultImplementation();
 
     public DefaultFlightService() {
-        this.flightRepository = di.getDependency(SQLFlightRepository.class);
+        this.flightRepository = di.getDependency(SQLFlightConnectionManager.class);
     }
 
     public static DefaultFlightService createInstance() {
