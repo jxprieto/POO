@@ -14,7 +14,7 @@ public interface Command {
             "availableSeats:<número de asientos disponibles>";
     String CREATE_FLIGHT_COMMAND = "createFlight";
 
-    String CREATE_CLIENT = "createClient name:<name>;age:<age>;email:<email>;phone:<phone>";
+    String CREATE_CLIENT = "name:<name>;age:<age>;email:<email>;phone:<phone>";
     String CREATE_CLIENT_COMMAND = "createClient";
 
     String CREATE_BOOKING = "origin:<origin>;arrival:<arrival>;seats:<número de asientos>";
