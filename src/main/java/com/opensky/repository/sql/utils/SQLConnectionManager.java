@@ -48,6 +48,24 @@ public final class SQLConnectionManager {
             conn = Database.getConnection();
             conn.setAutoCommit(false);
             action.apply(conn);
+            conn.commit();
+            conn.setAutoCommit(true);
+        } catch (SQLException e) {
+            throw new RuntimeException(errorMessage, e);
+        } finally {
+            if (conn != null) Database.releaseConnection(conn);
+        }
+    }
+
+    public static<T> T withConnectionTransactional(SQLFunction<T> action, String errorMessage) {
+        Connection conn = null;
+        try {
+            conn = Database.getConnection();
+            conn.setAutoCommit(false);
+            var ret = action.apply(conn);
+            conn.commit();
+            conn.setAutoCommit(true);
+            return ret;
         } catch (SQLException e) {
             throw new RuntimeException(errorMessage, e);
         } finally {

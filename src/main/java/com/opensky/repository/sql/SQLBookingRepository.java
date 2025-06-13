@@ -80,9 +80,8 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
 
     @Override
     public Booking create(Booking booking) {
-        return withConnection(conn -> {
+        return withConnectionTransactional(conn -> {
             try (final PreparedStatement stmt = conn.prepareStatement(CREATE_BOOKING, PreparedStatement.RETURN_GENERATED_KEYS)) {
-                conn.setAutoCommit(false);
                 final String generatedId = UUID.randomUUID().toString();
                 stmt.setString(1, generatedId);
                 stmt.setString(2, booking.getClient().getId());
@@ -90,8 +89,6 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
                 stmt.executeUpdate();
                 var ret = booking.toBuilder().id(generatedId).build();
                 addFlightsToBooking(ret, conn);
-                conn.commit();
-                conn.setAutoCommit(true);
                 return ret;
             }
         }, "Error creating booking for client: " + booking.getClient().getId());
@@ -99,9 +96,8 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
 
     @Override
     public Booking update(Booking booking) {
-        return withConnection(conn -> {
+        return withConnectionTransactional(conn -> {
             try (final PreparedStatement stmt = conn.prepareStatement(UPDATE_BOOKING)) {
-                conn.setAutoCommit(false);
                 stmt.setString(3, booking.getId());
                 stmt.setString(1, booking.getClient().getId());
                 stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
@@ -110,8 +106,6 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
             }
             deleteFlightsForBooking(booking, conn);
             addFlightsToBooking(booking, conn);
-            conn.commit();
-            conn.setAutoCommit(true);
             return booking;
         }, "Error updating booking with ID: " + booking.getId());
     }
@@ -133,14 +127,11 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
         Booking booking = read(id)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found for deletion: " + id));
         withConnectionTransactional(conn -> {
-            conn.setAutoCommit(false);
             try (final PreparedStatement stmt = conn.prepareStatement(DELETE_BOOKING_BY_ID)) {
                 stmt.setString(1, id);
                 stmt.executeUpdate();
             }
             deleteFlightsForBooking(booking, conn);
-            conn.commit();
-            conn.setAutoCommit(true);
         }, "Error deleting booking with ID: " + id);
     }
 
