@@ -57,7 +57,7 @@ public class CreateFlightViewCommand implements Command, Dependency {
             throw new FormatDataException("Departure and arrival times must be in the future");
 
         var flight = service.createFlight(flightNumber, origin, destination, departure, arrival, availableSeats);
-        printer.print("Flight created successfully with ID: " + flight.getId() + "\nFlight details:\n");
+        printer.print("Flight created successfully with ID: " + flight.getId() + "\nFlight details:");
         printer.print(flight + "\n");
     }
 }

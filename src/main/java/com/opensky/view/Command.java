@@ -51,7 +51,7 @@ public interface Command {
             EXIT_OPTION);
 
     default String getArgValue(String arg) {
-        return arg.split(COLON)[1];
+        return arg.split(COLON, 2)[1];
     }
 
     void execute(String command);

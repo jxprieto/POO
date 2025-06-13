@@ -29,6 +29,7 @@ public class OpenSkyCli {
             MODIFY_BOOKING_COMMAND, di.getDependency(ModifyBookingViewCommand.class),
             SHOW_ALL_CLIENTS_COMMAND, di.getDependency(ShowAllClientsViewCommand.class)
     );
+    private static Command defaultCommand = di.getDependency(DefaultViewCommand.class);
 
 
     public static void run(){
@@ -50,8 +51,9 @@ public class OpenSkyCli {
 
 
     private static Command getCommand(String input) {
-        return commands.get(
-                input.split(ARGUMENT_SPLIT_REGEX)[0]
+        return commands.getOrDefault(
+                input.split(ARGUMENT_SPLIT_REGEX)[0],
+                defaultCommand
         );
     }
 

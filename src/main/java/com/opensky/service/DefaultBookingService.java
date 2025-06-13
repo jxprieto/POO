@@ -62,25 +62,24 @@ public class DefaultBookingService implements BookingService, Dependency {
         final List<Flight> flightsFromOrigin = flights.stream()
                 .filter(flight -> flight.getOrigin().equals(origin))
                 .toList();
-        final List<Flight> differentOriginFlights = excludeFlightsFromOrigin(origin, flightsFromOrigin);
-        return findBestPathFromCandidates(flightsFromOrigin, differentOriginFlights, arrival);
+        final List<Flight> differentOriginFlights = excludeFlightsFromOrigin(origin, flights);
+        return Collections.unmodifiableList(
+                findBestPathFromCandidates(flightsFromOrigin, differentOriginFlights, arrival)
+        );
 
     }
 
-    private List<Flight> explorePathFromFlight(Flight previousFlight, List<Flight> flightsToExplore, String arrival) {
-        if (previousFlight.getDestination().equals(arrival)) return List.of(previousFlight);
-        final List<Flight> validFlightsFromOrigin = flightsToExplore.stream()
-                .filter(f -> f.getOrigin().equals(previousFlight.getOrigin()) && validFlight(previousFlight, f))
-                .toList();
-        final List<Flight> differentOriginFlights = excludeFlightsFromOrigin(previousFlight.getOrigin(), flightsToExplore);
-        return findBestPathFromCandidates(validFlightsFromOrigin, differentOriginFlights, arrival);
-    }
 
     private List<Flight> findBestPathFromCandidates(List<Flight> candidates, List<Flight> flightsToExplore,
                                                     String arrival) {
         List<Flight> bestPath = List.of();
         for (Flight current : candidates) {
-            List<Flight> nextPath = explorePathFromFlight(current, flightsToExplore, arrival);
+            if (current.getDestination().equals(arrival)) return List.of(current);
+            final List<Flight> validFlightsFromOrigin = flightsToExplore.stream()
+                    .filter(f -> f.getOrigin().equals(current.getDestination()) && validFlight(current, f))
+                    .toList();
+            final List<Flight> differentOriginFlights = excludeFlightsFromOrigin(current.getOrigin(), flightsToExplore);
+            final List<Flight> nextPath = findBestPathFromCandidates(validFlightsFromOrigin, differentOriginFlights, arrival);
             if (pathIsBetterThanPrevious(nextPath, bestPath))
                 bestPath = Stream.concat(Stream.of(current), nextPath.stream()).toList();
         }
@@ -88,8 +87,21 @@ public class DefaultBookingService implements BookingService, Dependency {
     }
 
 
-    private static boolean pathIsBetterThanPrevious(List<Flight> nextPath, List<Flight> bestFullPath) {
-        return !nextPath.isEmpty() && (bestFullPath.isEmpty() || nextPath.size() + 1 < bestFullPath.size());
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private static boolean pathIsBetterThanPrevious(List<Flight> nextPath, List<Flight> previousFullPath) {
+        return !nextPath.isEmpty() && (previousFullPath.isEmpty() || nextPath.size() + 1 < previousFullPath.size());
     }
 
     private static List<Flight> excludeFlightsFromOrigin(String originToExclude, List<Flight> flightsFromOrigin) {

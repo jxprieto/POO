@@ -1,6 +1,5 @@
 package com.opensky.repository.sql;
 
-import com.opensky.utils.Database;
 import com.opensky.model.Flight;
 import com.opensky.repository.FlightRepository;
 import com.opensky.utils.Dependency;
@@ -103,7 +102,6 @@ public class SQLFlightRepository implements FlightRepository, Dependency  {
     @Override
     public List<Flight> findAll() {
         return withConnection(conn -> {
-            conn = Database.getConnection();
             final List<Flight> flights = new ArrayList<>();
             try (final PreparedStatement stmt = conn.prepareStatement(FIND_ALL_FLIGHTS);
                  ResultSet rs = stmt.executeQuery()) {
