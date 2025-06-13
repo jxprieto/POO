@@ -46,6 +46,8 @@ public class CreateFlightViewCommand implements Command, Dependency {
         try{
             departure = LocalDateTime.parse(getArgValue(args[4]), formater);
             arrival = LocalDateTime.parse(getArgValue(args[5]), formater);
+            if (arrival.isBefore(departure))
+                throw new FormatDataException("Arrival time cannot be before departure time");
         }catch (DateTimeParseException e){
             throw new FormatDataException("Invalid date format, expected format is: yyyy-MM-dd:HH:mm");
         }
