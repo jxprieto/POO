@@ -31,7 +31,7 @@ public interface Command {
     String EXIT_OPTION = "exit";
 
     String MENU = String.format("""
-        Please enter a command (date format is yyyy-MM-dd HH:mm)
+        Please enter a command (date format is yyyy-MM-dd:HH:mm)
             -> %s %s
             -> %s %s
             -> %s %s

@@ -10,11 +10,12 @@ import com.opensky.utils.DependencyInjector;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class CreateFlightViewCommand implements Command, Dependency {
 
     public static final DependencyInjector di = DependencyInjector.getDefaultImplementation();
-    private static final DateTimeFormatter formater = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static final DateTimeFormatter formater = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH:mm");
 
     public static CreateFlightViewCommand createInstance() {
         return new CreateFlightViewCommand(
@@ -40,8 +41,15 @@ public class CreateFlightViewCommand implements Command, Dependency {
         final String flightNumber = getArgValue(args[1]);
         final String origin = getArgValue(args[2]);
         final String destination = getArgValue(args[3]);
-        final LocalDateTime departure = LocalDateTime.parse(getArgValue(args[4]), formater);
-        final LocalDateTime arrival = LocalDateTime.parse(getArgValue(args[5]), formater);
+        final LocalDateTime departure;
+        final LocalDateTime arrival;
+        try{
+            departure = LocalDateTime.parse(getArgValue(args[4]), formater);
+            arrival = LocalDateTime.parse(getArgValue(args[5]), formater);
+        }catch (DateTimeParseException e){
+            throw new FormatDataException("Invalid date format, expected format is: yyyy-MM-dd:HH:mm");
+        }
+
         final int availableSeats = Integer.parseInt(getArgValue(args[6]));
 
         if (availableSeats < 0) throw new FormatDataException("Available seats cannot be negative");
