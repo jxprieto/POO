@@ -14,7 +14,8 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.opensky.repository.sql.utils.SQLConnectionManager.*;
+import static com.opensky.repository.sql.utils.SQLConnectionManager.withConnection;
+import static com.opensky.repository.sql.utils.SQLConnectionManager.withConnectionTransactional;
 
 
 public class SQLBookingRepository implements BookingRepository, Dependency {
@@ -72,29 +73,35 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
             "WHERE client_id = ?";
 
     private static final String UPDATE_FLIGHT_ADD_NUM_OF_SEATS =
-            "UPDATE booking_flights " +
-            "SET num_of_seats = (num_of_seats + ?) " +
-            "WHERE booking_id = ? and flight_id = ?";
+            "UPDATE flights " +
+            "SET available_seats = (available_seats + ?) " +
+            "WHERE id = ?";
 
 
     @Override
     public Booking create(Booking booking) {
         return withConnection(conn -> {
             try (final PreparedStatement stmt = conn.prepareStatement(CREATE_BOOKING, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                conn.setAutoCommit(false);
                 final String generatedId = UUID.randomUUID().toString();
                 stmt.setString(1, generatedId);
                 stmt.setString(2, booking.getClient().getId());
                 stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
                 stmt.executeUpdate();
-                return booking.toBuilder().id(generatedId).build();
+                var ret = booking.toBuilder().id(generatedId).build();
+                addFlightsToBooking(ret, conn);
+                conn.commit();
+                conn.setAutoCommit(true);
+                return ret;
             }
-        }, "Error creating booking with ID: " + booking.getId());
+        }, "Error creating booking for client: " + booking.getClient().getId());
     }
 
     @Override
     public Booking update(Booking booking) {
         return withConnection(conn -> {
             try (final PreparedStatement stmt = conn.prepareStatement(UPDATE_BOOKING)) {
+                conn.setAutoCommit(false);
                 stmt.setString(3, booking.getId());
                 stmt.setString(1, booking.getClient().getId());
                 stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
@@ -103,6 +110,8 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
             }
             deleteFlightsForBooking(booking, conn);
             addFlightsToBooking(booking, conn);
+            conn.commit();
+            conn.setAutoCommit(true);
             return booking;
         }, "Error updating booking with ID: " + booking.getId());
     }
@@ -123,13 +132,15 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
     public void deleteById(String id) {
         Booking booking = read(id)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found for deletion: " + id));
-        withConnectionTransactional(conn ->{
+        withConnectionTransactional(conn -> {
+            conn.setAutoCommit(false);
             try (final PreparedStatement stmt = conn.prepareStatement(DELETE_BOOKING_BY_ID)) {
                 stmt.setString(1, id);
                 stmt.executeUpdate();
             }
             deleteFlightsForBooking(booking, conn);
             conn.commit();
+            conn.setAutoCommit(true);
         }, "Error deleting booking with ID: " + id);
     }
 
@@ -203,8 +214,7 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
         try (final PreparedStatement updateAvailableSeats = conn.prepareStatement(UPDATE_FLIGHT_ADD_NUM_OF_SEATS)) {
             for (int i = 0; i < booking.getFlights().size(); ++i) {
                 updateAvailableSeats.setInt(1, booking.getNumberOfSeatsPerFlight().get(i));
-                updateAvailableSeats.setString(2, booking.getId());
-                updateAvailableSeats.setString(3, booking.getFlights().get(i).getId());
+                updateAvailableSeats.setString(2, booking.getFlights().get(i).getId());
                 updateAvailableSeats.addBatch();
             }
             updateAvailableSeats.executeBatch();
@@ -214,26 +224,22 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
     }
 
     private static void addFlightsToBooking(Booking booking, Connection conn) throws SQLException {
-        conn.setAutoCommit(false);
         try (final PreparedStatement insertStmt = conn.prepareStatement(INSERT_FLIGHTS_IN_BOOKING)) {
-            for (int i = 0 ; i < booking.getFlights().size(); ++i) {
-                insertStmt.setString(1, booking.getId());
-                insertStmt.setString(2, booking.getFlights().get(i).getId());
-                insertStmt.setInt(3, booking.getNumberOfSeatsPerFlight().get(i));
-                insertStmt.addBatch();
+            try (final PreparedStatement updateStmt = conn.prepareStatement(UPDATE_FLIGHT_ADD_NUM_OF_SEATS)) {
+                for (int i = 0 ; i < booking.getFlights().size(); ++i) {
+                    insertStmt.setString(1, booking.getId());
+                    insertStmt.setString(2, booking.getFlights().get(i).getId());
+                    insertStmt.setInt(3, booking.getNumberOfSeatsPerFlight().get(i));
+                    insertStmt.addBatch();
+
+                    updateStmt.setInt(1, -booking.getNumberOfSeatsPerFlight().get(i));
+                    updateStmt.setString(2, booking.getFlights().get(i).getId());
+                    updateStmt.addBatch();
+                }
+                insertStmt.executeBatch();
+                updateStmt.executeBatch();
             }
-            insertStmt.executeBatch();
         }
-        try (final PreparedStatement insertStmt = conn.prepareStatement(UPDATE_FLIGHT_ADD_NUM_OF_SEATS)) {
-            for (int i = 0 ; i < booking.getFlights().size(); ++i) {
-                insertStmt.setInt(1, - booking.getNumberOfSeatsPerFlight().get(i));
-                insertStmt.setString(2, booking.getId());
-                insertStmt.setString(3, booking.getFlights().get(i).getId());
-                insertStmt.addBatch();
-            }
-            insertStmt.executeBatch();
-        }
-        conn.commit();
-        conn.setAutoCommit(true);
+
     }
 }

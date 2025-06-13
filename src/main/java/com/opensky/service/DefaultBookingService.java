@@ -5,8 +5,10 @@ import com.opensky.exception.NotAvailableFlightException;
 import com.opensky.model.Booking;
 import com.opensky.model.Flight;
 import com.opensky.repository.BookingRepository;
+import com.opensky.repository.ClientRepository;
 import com.opensky.repository.FlightRepository;
 import com.opensky.repository.sql.SQLBookingRepository;
+import com.opensky.repository.sql.SQLClientRepository;
 import com.opensky.repository.sql.SQLFlightRepository;
 import com.opensky.utils.Dependency;
 import com.opensky.utils.DependencyInjector;
@@ -24,20 +26,24 @@ public class DefaultBookingService implements BookingService, Dependency {
     public static DefaultBookingService createInstance() {
         return new DefaultBookingService(
                 di.getDependency(SQLBookingRepository.class),
-                di.getDependency(SQLFlightRepository.class)
+                di.getDependency(SQLFlightRepository.class),
+                di.getDependency(SQLClientRepository.class)
         );
     }
 
     private final BookingRepository bookingRepository;
     private final FlightRepository flightRepository;
+    private final ClientRepository clientRepository;
 
-    private DefaultBookingService(final BookingRepository bookingRepository, final FlightRepository flightRepository) {
+    private DefaultBookingService(final BookingRepository bookingRepository, final FlightRepository flightRepository,
+                                  final ClientRepository clientRepository) {
         this.bookingRepository = bookingRepository;
         this.flightRepository = flightRepository;
+        this.clientRepository = clientRepository;
     }
 
     @Override
-    public Booking createBooking(String origin, String arrival, int numberOfSeats) {
+    public Booking createBooking(String origin, String arrival, int numberOfSeats, String clientId) {
         final List<Flight> flights = flightRepository
                 .findAll()
                 .stream()
@@ -48,13 +54,13 @@ public class DefaultBookingService implements BookingService, Dependency {
             throw new NotAvailableFlightException(origin, arrival, numberOfSeats);
         var booking = Booking
                 .builder()
-                .client(null)
+                .client(clientRepository.read(clientId)
+                        .orElseThrow(() -> new EntityNotFoundException("Client not found for id: " + clientId)))
                 .flights(bookingFlights)
                 .bookingDate(LocalDateTime.now())
                 .numberOfSeatsPerFlight(Collections.nCopies(bookingFlights.size(), numberOfSeats))
                 .build();
-        bookingRepository.create(booking);
-        return booking;
+        return bookingRepository.create(booking);
     }
 
     private List<Flight> getBestConnection(List<Flight> flights, String origin, String arrival) {
@@ -85,20 +91,6 @@ public class DefaultBookingService implements BookingService, Dependency {
         }
         return bestPath;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     private static boolean pathIsBetterThanPrevious(List<Flight> nextPath, List<Flight> previousFullPath) {
         return !nextPath.isEmpty() && (previousFullPath.isEmpty() || nextPath.size() + 1 < previousFullPath.size());
