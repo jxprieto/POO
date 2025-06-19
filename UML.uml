@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>/Users/jaimeprieto/IdeaProjects/OpenSkyAirlines</OriginalElement>
+  <nodes>
+    <node x="1015.0793232060811" y="215.4320281176075">com.opensky.repository.ClientRepository</node>
+    <node x="598.104456074188" y="731.5223996641062">com.opensky.exception.FormatDataException</node>
+    <node x="2117.460736233798" y="709.1686768353335">com.opensky.OpenSkyCli</node>
+    <node x="843.6581953531835" y="-107.87910522239602">com.opensky.model.Flight</node>
+    <node x="1565.1706827025087" y="83.25703481451426">com.opensky.service.ClientService</node>
+    <node x="1944.818778673372" y="530.4232774244954">com.opensky.OpenSkyApp</node>
+    <node x="1884.4212390099392" y="824.283887111169">com.opensky.execution.CommandExecutor</node>
+    <node x="897.6584940078907" y="-245.01974124600315">com.opensky.model.Entity</node>
+    <node x="156.3219156275444" y="231.29225538905584">com.opensky.repository.sql.SQLFlightRepository</node>
+    <node x="1297.7792294534788" y="89.96974296791407">com.opensky.service.FlightService</node>
+    <node x="892.9145557589219" y="772.2888989389048">com.opensky.exception.NotAvailableFlightException</node>
+    <node x="156.40778569723568" y="726.0947778401115">com.opensky.view.Command</node>
+    <node x="-370.21940165913986" y="668.1959271309856">com.opensky.utils.SingletonDependencyInjector</node>
+    <node x="1581.0111596648317" y="196.69349589390902">com.opensky.service.DefaultClientService</node>
+    <node x="1102.9397408624104" y="-107.87910522239602">com.opensky.model.Booking</node>
+    <node x="-6.404099533501949" y="256.462222532192">com.opensky.printer.Printer</node>
+    <node x="529.6293640768941" y="993.546811234457">com.opensky.view.CreateClientViewCommand</node>
+    <node x="705.5636707110017" y="1193.6147571008053">com.opensky.view.CreateFlightViewCommand</node>
+    <node x="1006.6339546798972" y="326.53522919255715">com.opensky.repository.sql.SQLClientRepository</node>
+    <node x="873.4728891225229" y="682.3368519384217">com.opensky.exception.DuplicatedFieldException</node>
+    <node x="580.3138522333904" y="152.52593458793982">com.opensky.repository.BookingRepository</node>
+    <node x="1191.2175775613844" y="772.2888989389048">com.opensky.exception.FlightAlreadyExistsInBooking</node>
+    <node x="601.4134839109806" y="-107.87910522239602">com.opensky.model.Client</node>
+    <node x="87.94249223362908" y="593.0127538281203">com.opensky.utils.DependencyInjector</node>
+    <node x="869.9768444892092" y="977.4617528736279">com.opensky.view.CreateBookingViewCommand</node>
+    <node x="1090.99047697487" y="1153.603057994945">com.opensky.view.ShowAllClientsViewCommand</node>
+    <node x="300.94317726139633" y="3.7139213079139495">com.opensky.repository.GenericRepository</node>
+    <node x="1916.2014682033239" y="171.71405518871447">com.opensky.service.DefaultBookingService</node>
+    <node x="1370.8361316084415" y="685.0718695206751">com.opensky.exception.DataBaseException</node>
+    <node x="532.3264042355872" y="242.26353499422692">com.opensky.repository.sql.SQLBookingRepository</node>
+    <node x="-68.46803681137294" y="426.118976646865">com.opensky.printer.ConsolePrinter</node>
+    <node x="1901.318778673372" y="453.7704609628416">com.opensky.repository.sql.utils.SQLConnectionManager</node>
+    <node x="1325.673339178087" y="981.9988721209842">com.opensky.view.ViewItineraryViewCommand</node>
+    <node x="1509.1398457152522" y="757.48558596335">com.opensky.exception.EntityNotFoundException</node>
+    <node x="1475.9321812591638" y="1225.6334918800292">com.opensky.view.ModifyBookingViewCommand</node>
+    <node x="241.26078922801202" y="142.60096260588068">com.opensky.repository.FlightRepository</node>
+    <node x="1834.5621359515383" y="83.25703481451426">com.opensky.service.BookingService</node>
+    <node x="1754.764517447097" y="1021.4910459308778">com.opensky.view.CancelBookingViewCommand</node>
+    <node x="262.4409879909708" y="1258.3917099296546">com.opensky.view.DefaultViewCommand</node>
+    <node x="1118.4373981756196" y="594.0395985447292">com.opensky.exception.OpenSkyException</node>
+    <node x="1278.8208511263397" y="232.88365355443855">com.opensky.service.DefaultFlightService</node>
+    <node x="2169.81289739512" y="936.939939504394">com.opensky.utils.Database</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.opensky.view.CreateFlightViewCommand" target="com.opensky.view.Command" relationship="REALIZATION">
+      <point x="3.292889983299574E-4" y="-67.49975710080525" />
+      <point x="837.064" y="1130.0" />
+      <point x="833.0" y="1130.0" />
+      <point x="833.0" y="961.595" />
+      <point x="147.5002143027643" y="2.2215988849438872E-4" />
+    </edge>
+    <edge source="com.opensky.view.ModifyBookingViewCommand" target="com.opensky.view.Command" relationship="REALIZATION">
+      <point x="-1.8125916380995477E-4" y="-55.50049188002913" />
+      <point x="1617.932" y="1130.0" />
+      <point x="833.0" y="1130.0" />
+      <point x="833.0" y="961.595" />
+      <point x="147.5002143027643" y="2.2215988849438872E-4" />
+    </edge>
+    <edge source="com.opensky.repository.sql.SQLBookingRepository" target="com.opensky.repository.BookingRepository" relationship="REALIZATION">
+      <point x="0.0" y="-163.5" />
+      <point x="61.51255200219685" y="14.0" />
+    </edge>
+    <edge source="com.opensky.model.Flight" target="com.opensky.model.Entity" relationship="GENERALIZATION">
+      <point x="-6.53328551152299E-5" y="-91.50007751949059" />
+      <point x="961.6581300203284" y="-134.48700769562748" />
+      <point x="961.6581953531835" y="-134.48700769562748" />
+      <point x="-2.986547071941459E-4" y="31.500117942648473" />
+    </edge>
+    <edge source="com.opensky.exception.FlightAlreadyExistsInBooking" target="com.opensky.exception.OpenSkyException" relationship="GENERALIZATION">
+      <point x="4.140618362953319E-4" y="-14.000061498446826" />
+      <point x="1327.7179916232208" y="742.68038422979" />
+      <point x="1245.154510365482" y="742.68038422979" />
+      <point x="1245.154510365482" y="608.04" />
+      <point x="97.99960182438042" y="4.014552707758412E-4" />
+    </edge>
+    <edge source="com.opensky.repository.sql.SQLClientRepository" target="com.opensky.repository.ClientRepository" relationship="REALIZATION">
+      <point x="6.445045320102793" y="-103.5" />
+      <point x="14.999676793918923" y="14.0" />
+    </edge>
+    <edge source="com.opensky.repository.ClientRepository" target="com.opensky.repository.GenericRepository" relationship="INTERFACE_GENERALIZATION">
+      <point x="-3.2320608107738735E-4" y="13.999971882392487" />
+      <point x="1103.579" y="174.82255163981506" />
+      <point x="963.826" y="174.82255163981506" />
+      <point x="963.826" y="118.56691853058564" />
+      <point x="434.76099999999997" y="118.56691853058564" />
+      <point x="21.817822738603667" y="14.00007869208605" />
+    </edge>
+    <edge source="com.opensky.exception.DuplicatedFieldException" target="com.opensky.exception.OpenSkyException" relationship="GENERALIZATION">
+      <point x="1.108774771410026E-4" y="-13.99985193842167" />
+      <point x="996.4730000000001" y="653.0" />
+      <point x="1245.154510365482" y="653.0" />
+      <point x="1245.154510365482" y="608.04" />
+      <point x="97.99960182438042" y="4.014552707758412E-4" />
+    </edge>
+    <edge source="com.opensky.exception.NotAvailableFlightException" target="com.opensky.exception.OpenSkyException" relationship="GENERALIZATION">
+      <point x="-2.3551586221515208E-4" y="-13.999898938904835" />
+      <point x="1025.9143202430596" y="743.0" />
+      <point x="1245.154510365482" y="743.0" />
+      <point x="1245.154510365482" y="608.04" />
+      <point x="97.99960182438042" y="4.014552707758412E-4" />
+    </edge>
+    <edge source="com.opensky.view.CreateClientViewCommand" target="com.opensky.view.Command" relationship="REALIZATION">
+      <point x="-3.640768941757244E-4" y="55.500188765543044" />
+      <point x="662.129" y="1130.0" />
+      <point x="833.0" y="1130.0" />
+      <point x="833.0" y="961.595" />
+      <point x="147.5002143027643" y="2.2215988849438872E-4" />
+    </edge>
+    <edge source="com.opensky.printer.ConsolePrinter" target="com.opensky.printer.Printer" relationship="REALIZATION">
+      <point x="31.06393727787099" y="-14.0" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="com.opensky.exception.DataBaseException" target="com.opensky.exception.OpenSkyException" relationship="GENERALIZATION">
+      <point x="-100.0001316084415" y="1.3047932486642821E-4" />
+      <point x="1343.0" y="699.072" />
+      <point x="1343.0" y="653.0" />
+      <point x="1245.154510365482" y="653.0" />
+      <point x="1245.154510365482" y="608.04" />
+      <point x="97.99960182438042" y="4.014552707758412E-4" />
+    </edge>
+    <edge source="com.opensky.service.DefaultBookingService" target="com.opensky.service.BookingService" relationship="REALIZATION">
+      <point x="-134.5" y="-67.5" />
+      <point x="1923.701468203324" y="111.25703481451426" />
+      <point x="24.180525537333324" y="14.0" />
+    </edge>
+    <edge source="com.opensky.repository.GenericRepository" target="com.opensky.model.Entity" relationship="DEPENDENCY">
+      <point x="-27.54135917900834" y="-14.0" />
+      <point x="385.401818082388" y="-264.1925641489463" />
+      <point x="961.6584940078907" y="-264.1925641489463" />
+      <point x="0.0" y="-31.5" />
+    </edge>
+    <edge source="com.opensky.repository.sql.SQLFlightRepository" target="com.opensky.repository.FlightRepository" relationship="REALIZATION">
+      <point x="-0.060915627544375184" y="-91.5" />
+      <point x="-14.999789228011991" y="14.0" />
+    </edge>
+    <edge source="com.opensky.repository.FlightRepository" target="com.opensky.repository.GenericRepository" relationship="INTERFACE_GENERALIZATION">
+      <point x="2.1077198800867336E-4" y="14.000037394119303" />
+      <point x="329.261" y="116.70131281166005" />
+      <point x="434.76099999999997" y="116.70131281166005" />
+      <point x="21.817822738603667" y="14.00007869208605" />
+    </edge>
+    <edge source="com.opensky.model.Booking" target="com.opensky.model.Entity" relationship="GENERALIZATION">
+      <point x="-2.4890909295256733" y="-58.77863907180907" />
+      <point x="1244.4506499328847" y="-134.48700769562748" />
+      <point x="961.6581953531835" y="-134.48700769562748" />
+      <point x="-2.986547071941459E-4" y="31.500117942648473" />
+    </edge>
+    <edge source="com.opensky.view.ViewItineraryViewCommand" target="com.opensky.view.Command" relationship="REALIZATION">
+      <point x="-3.391780869606009E-4" y="55.50012787901585" />
+      <point x="1460.173" y="1130.0" />
+      <point x="833.0" y="1130.0" />
+      <point x="833.0" y="961.595" />
+      <point x="147.5002143027643" y="2.2215988849438872E-4" />
+    </edge>
+    <edge source="com.opensky.view.ShowAllClientsViewCommand" target="com.opensky.view.Command" relationship="REALIZATION">
+      <point x="-4.769748701392018E-4" y="-55.50005799494488" />
+      <point x="1232.49" y="1130.0" />
+      <point x="833.0" y="1130.0" />
+      <point x="833.0" y="961.595" />
+      <point x="147.5002143027643" y="2.2215988849438872E-4" />
+    </edge>
+    <edge source="com.opensky.exception.EntityNotFoundException" target="com.opensky.exception.OpenSkyException" relationship="GENERALIZATION">
+      <point x="4.017327992187347E-4" y="-13.999501988563452" />
+      <point x="1632.1402474480515" y="653.0" />
+      <point x="1245.154510365482" y="653.0" />
+      <point x="1245.154510365482" y="608.04" />
+      <point x="97.99960182438042" y="4.014552707758412E-4" />
+    </edge>
+    <edge source="com.opensky.service.DefaultClientService" target="com.opensky.service.ClientService" relationship="REALIZATION">
+      <point x="-81.84047696232312" y="-67.5" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="com.opensky.view.CancelBookingViewCommand" target="com.opensky.view.Command" relationship="REALIZATION">
+      <point x="-141.49951744709688" y="-4.593087783177907E-5" />
+      <point x="1639.362" y="1076.991" />
+      <point x="1639.362" y="1130.0" />
+      <point x="833.0" y="1130.0" />
+      <point x="833.0" y="961.595" />
+      <point x="147.5002143027643" y="2.2215988849438872E-4" />
+    </edge>
+    <edge source="com.opensky.utils.SingletonDependencyInjector" target="com.opensky.utils.DependencyInjector" relationship="REALIZATION">
+      <point x="198.5" y="-8.859075192563978" />
+      <point x="190.94249223362908" y="702.8368519384217" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="com.opensky.repository.BookingRepository" target="com.opensky.repository.GenericRepository" relationship="INTERFACE_GENERALIZATION">
+      <point x="1.4776660955817533E-4" y="14.00006541206018" />
+      <point x="677.814" y="118.56691853058564" />
+      <point x="434.76099999999997" y="118.56691853058564" />
+      <point x="21.817822738603667" y="14.00007869208605" />
+    </edge>
+    <edge source="com.opensky.model.Client" target="com.opensky.model.Entity" relationship="GENERALIZATION">
+      <point x="28.586516089019376" y="-67.49990247323146" />
+      <point x="718.5" y="-134.48700769562748" />
+      <point x="961.6581953531835" y="-134.48700769562748" />
+      <point x="-2.986547071941459E-4" y="31.500117942648473" />
+    </edge>
+    <edge source="com.opensky.view.CreateBookingViewCommand" target="com.opensky.view.Command" relationship="REALIZATION">
+      <point x="-140.99984448920915" y="2.4712637207358057E-4" />
+      <point x="833.0" y="1032.962" />
+      <point x="833.0" y="961.595" />
+      <point x="147.5002143027643" y="2.2215988849438872E-4" />
+    </edge>
+    <edge source="com.opensky.service.DefaultFlightService" target="com.opensky.service.FlightService" relationship="REALIZATION">
+      <point x="-31.54162167286097" y="-43.5" />
+      <point x="0.0" y="14.0" />
+    </edge>
+    <edge source="com.opensky.exception.FormatDataException" target="com.opensky.exception.OpenSkyException" relationship="GENERALIZATION">
+      <point x="-1.5039012995998746E-4" y="14.000380027340498" />
+      <point x="706.604305684058" y="651.1276199726595" />
+      <point x="1245.154510365482" y="651.1276199726595" />
+      <point x="1245.154510365482" y="633.9899804550316" />
+      <point x="1245.464683527416" y="633.9899804550316" />
+      <point x="1245.464683527416" y="621.0149902275158" />
+      <point x="1314.437" y="621.0149902275158" />
+      <point x="97.99960182438042" y="4.014552707758412E-4" />
+    </edge>
+    <edge source="com.opensky.view.DefaultViewCommand" target="com.opensky.view.Command" relationship="REALIZATION">
+      <point x="74.55901200902917" y="-55.4997099296545" />
+      <point x="479.5" y="1130.0" />
+      <point x="833.0" y="1130.0" />
+      <point x="833.0" y="961.595" />
+      <point x="147.5002143027643" y="2.2215988849438872E-4" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Compact" zoom="0.40315639305312195" showDependencies="false" x="1388.1298673892973" y="536.166743009692" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
