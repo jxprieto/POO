@@ -38,9 +38,10 @@ public class SQLFlightRepository implements FlightRepository, Dependency  {
             "FROM flights";
 
     private static final String FIND_ALL_FLIGHTS_BY_BOOKING_ID =
-            "SELECT f.id, f.flight_number, f.origin, f.destination, f.departure_time, f.arrival_time, f.available_seats, bf.number_of_seats" +
+            "SELECT f.id, f.flight_number, f.origin, f.destination, f.departure_time, f.arrival_time, f.available_seats, bf.number_of_seats " +
             "FROM flights f JOIN booking_flights bf " +
-            "ON f.id = bf.flight_id and bf.booking_id = ?";
+            "ON f.id = bf.flight_id " +
+            "WHERE bf.booking_id = ?";
 
     private SQLFlightRepository() {}
 

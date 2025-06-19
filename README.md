@@ -14,7 +14,7 @@
 
 ## 📋 Requisitos previos
 
-- Java 22 instalado ([Guía oficial de instalación](https://jdk.java.net/22/))
+- Java 24 instalado ([Guía oficial de instalación](https://jdk.java.net/24/))
 - Docker y Docker Compose instalados
 - Tener el contenedor de la base de datos corriendo
 

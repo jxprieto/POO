@@ -12,7 +12,7 @@ public class Database {
 
     private static final Object lock = new Object();
     private static final String PROPERTIES_FILE = "db.properties";
-    private static final int POOL_SIZE = 1;
+    private static final int POOL_SIZE = 5;
     private static final List<Connection> pool = new ArrayList<>(POOL_SIZE);
 
     private static String url;
