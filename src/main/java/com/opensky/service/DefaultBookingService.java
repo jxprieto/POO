@@ -117,7 +117,8 @@ public class DefaultBookingService implements BookingService, Dependency {
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found for id: " + bookingId));
         var flight = flightRepository.read(flightId)
                 .orElseThrow(() -> new EntityNotFoundException("Flight not found for id: " + flightId));
-
+        if (booking.getFlights().contains(flight))
+            throw new EntityNotFoundException("Flight already exists in booking: " + bookingId);
         var newFlights = new ArrayList<>(booking.getFlights());
         var newNumberOfSeats = new ArrayList<>(booking.getNumberOfSeatsPerFlight());
 

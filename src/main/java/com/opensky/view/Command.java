@@ -18,7 +18,7 @@ public interface Command {
     String CREATE_CLIENT_COMMAND = "createClient";
 
     String CREATE_BOOKING = "origin:<origin>;arrival:<arrival>;seats:<número de asientos>;clientId:<id cliente>";
-    String CREATE_BOOKING_COMMAND = "createBooking";
+    String CREATE_BOOKING_COMMAND = "createReservation";
 
     String CANCEL_BOOKING = "reservationId:<id reserva>";
     String CANCEL_BOOKING_COMMAND = "cancelReservation";

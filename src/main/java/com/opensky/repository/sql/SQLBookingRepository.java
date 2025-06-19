@@ -105,6 +105,7 @@ public class SQLBookingRepository implements BookingRepository, Dependency {
                 if (updated == 0) throw new EntityNotFoundException("Booking not found for update: " + booking.getId());
             }
             deleteFlightsForBooking(booking, conn);
+            conn.commit();
             addFlightsToBooking(booking, conn);
             return booking;
         }, "Error updating booking with ID: " + booking.getId());
